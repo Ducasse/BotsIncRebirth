@@ -3,9 +3,16 @@ I am a flap, in the spirit of Squeak Supplies flaps: a drawer stuck to one edge 
 
 Clicking my tab slides me open or closed. Dragging one of my items drops a fresh copy into the world. Since Bloc elements cannot be copied, I store prototypes as blocks that create a new element each time.
 
+The world must have a real size (a fresh BlElement is only 50@50 and clips its children), so make it fill the space:
+
 ```
 | world flap |
-world := BlElement new background: Color white; yourself.
+world := BlElement new
+	background: Color white;
+	constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical matchParent ];
+	yourself.
 flap := BoFlap new edge: BoFlapEdge left; yourself.
 flap addPrototype: [ BlElement new extent: 40@40; background: Color red; yourself ].
 flap attachTo: world.
@@ -63,6 +70,11 @@ BoFlap >> addPrototype: aBlock [
 
 { #category : 'attaching' }
 BoFlap >> attachTo: aWorldElement [
+	"The world fills its parent: an unsized element is 50@50 and clips its children, which would hide the flap"
+
+	aWorldElement constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical matchParent ].
 	aWorldElement addChild: self.
 	aWorldElement
 		addEventHandlerOn: BlElementExtentChangedEvent
@@ -136,6 +148,19 @@ BoFlap >> length: aNumber [
 	self rebuild
 ]
 
+{ #category : 'accessing' }
+BoFlap >> maxThickness [
+	"The tab must stay inside the world"
+
+	self hasParent ifFalse: [ ^ thickness ].
+	^ (edge availableThicknessOf: self in: self parent extent) max: self minThickness
+]
+
+{ #category : 'accessing' }
+BoFlap >> minThickness [
+	^ 40
+]
+
 { #category : 'initialization' }
 BoFlap >> newItemFor: aPrototypeBlock [
 	"Return a cell showing a fresh instance of the prototype. The instance ignores the mouse so that the cell receives the drag events"
@@ -167,9 +192,7 @@ BoFlap >> newTab [
 	^ BlElement new
 		background: Color orange;
 		geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
-		addEventHandlerOn: BlClickEvent do: [ :anEvent |
-			anEvent consumed: true.
-			self toggle ];
+		addEventHandler: (BoFlapTabHandler flap: self);
 		yourself
 ]
 
@@ -197,6 +220,15 @@ BoFlap >> rebuild [
 	tab extent: (edge tabExtentFor: self).
 	edge arrangePane: pane tab: tab in: self.
 	self updatePosition
+]
+
+{ #category : 'resizing' }
+BoFlap >> resizeTo: aNumber [
+	"Open the flap with a new thickness, kept between the minimum and the maximum, without animation"
+
+	thickness := (aNumber max: self minThickness) min: self maxThickness.
+	open := true.
+	self rebuild
 ]
 
 { #category : 'private' }

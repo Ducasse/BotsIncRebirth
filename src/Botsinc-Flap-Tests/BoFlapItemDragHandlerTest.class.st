@@ -9,6 +9,24 @@ Class {
 }
 
 { #category : 'tests' }
+BoFlapItemDragHandlerTest >> testCopyIsHeldUnderPointer [
+	"Grabbing 15@10 inside the item keeps that point under the pointer, above the flap"
+
+	| item sim copy |
+	item := flap items first.
+	sim := item eventSimulator.
+	sim
+		mouseDownAt: item boundsInSpace origin + (15 @ 10);
+		mouseMoveAt: 35 @ 180;
+		mouseMoveAt: 315 @ 370.
+	copy := world children last.
+	self assert: copy position equals: 300 @ 360.
+	self assert: copy elevation elevation > flap elevation elevation.
+	sim mouseUpAt: 315 @ 370.
+	self assert: copy elevation elevation equals: 0
+]
+
+{ #category : 'tests' }
 BoFlapItemDragHandlerTest >> testDragOutAddsCopyToWorld [
 	flap items first eventSimulator dragBy: 200 @ 50.
 	space settle.

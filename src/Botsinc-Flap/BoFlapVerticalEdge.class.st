@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : 'positions' }
+BoFlapVerticalEdge >> availableThicknessOf: aFlap in: aWorldExtent [
+	^ aWorldExtent x - aFlap tabThickness
+]
+
+{ #category : 'positions' }
 BoFlapVerticalEdge >> crossPositionOf: aFlap in: aWorldExtent [
 	^ (aWorldExtent y - aFlap length) / 2
 ]

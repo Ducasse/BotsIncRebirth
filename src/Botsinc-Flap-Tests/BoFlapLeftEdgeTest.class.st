@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : 'tests' }
+BoFlapLeftEdgeTest >> testGrowth [
+	self assert: (BoFlapEdge left growthFor: 10 @ 3) equals: 10
+]
+
+{ #category : 'tests' }
 BoFlapLeftEdgeTest >> testPaneComesBeforeTab [
 	flap edge: BoFlapEdge left.
 	flap forceLayout.

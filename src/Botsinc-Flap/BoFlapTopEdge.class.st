@@ -18,6 +18,11 @@ BoFlapTopEdge >> closedPositionOf: aFlap in: aWorldExtent [
 	^ (self crossPositionOf: aFlap in: aWorldExtent) @ aFlap thickness negated
 ]
 
+{ #category : 'resizing' }
+BoFlapTopEdge >> growthFor: aDelta [
+	^ aDelta y
+]
+
 { #category : 'positions' }
 BoFlapTopEdge >> openPositionOf: aFlap in: aWorldExtent [
 	^ (self crossPositionOf: aFlap in: aWorldExtent) @ 0

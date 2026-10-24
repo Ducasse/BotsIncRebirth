@@ -24,6 +24,7 @@ BoFlapItemDragHandler >> dragEndEvent: anEvent [
 	"Dropping the copy back over the flap cancels it"
 
 	anEvent consumed: true.
+	copy elevation: (BlRelativeElevation elevation: 0).
 	(flap containsGlobalPoint: anEvent position)
 		ifTrue: [ copy removeFromParent ]
 ]
@@ -36,9 +37,11 @@ BoFlapItemDragHandler >> dragEvent: anEvent [
 
 { #category : 'event handling' }
 BoFlapItemDragHandler >> dragStartEvent: anEvent [
+	"The copy is held above the flap while it is dragged"
+
 	anEvent consumed: true.
-	offset := anEvent currentTarget globalPointToLocal: anEvent position.
 	copy := prototype value.
+	copy elevation: (BlRelativeElevation elevation: flap elevation elevation + 1).
 	copy addEventHandler: BoMoveDragHandler new.
 	flap parent addChild: copy.
 	self moveCopyTo: anEvent position
@@ -46,7 +49,14 @@ BoFlapItemDragHandler >> dragStartEvent: anEvent [
 
 { #category : 'accessing' }
 BoFlapItemDragHandler >> eventsToHandle [
-	^ { BlDragStartEvent. BlDragEvent. BlDragEndEvent }
+	^ { BlMouseDownEvent. BlDragStartEvent. BlDragEvent. BlDragEndEvent }
+]
+
+{ #category : 'event handling' }
+BoFlapItemDragHandler >> mouseDownEvent: anEvent [
+	"Remember where the item is grabbed: the drag starts only after the pointer has moved a little"
+
+	offset := anEvent currentTarget globalPointToLocal: anEvent position
 ]
 
 { #category : 'private' }

@@ -18,19 +18,38 @@ BoFlapTest >> testAddPrototypeCreatesItem [
 ]
 
 { #category : 'tests' }
+BoFlapTest >> testAttachMakesWorldFillItsParent [
+	| world |
+	world := BlElement new.
+	BoFlap new attachTo: world.
+	self assert: world constraints horizontal resizer isMatchParent.
+	self assert: world constraints vertical resizer isMatchParent
+]
+
+{ #category : 'tests' }
 BoFlapTest >> testAttachPlacesFlapClosed [
-	| world flap |
-	world := BlElement new extent: 600 @ 400; yourself.
+	| parent world flap |
+	parent := BlElement new extent: 600 @ 400; yourself.
+	world := BlElement new.
+	parent addChild: world.
 	flap := BoFlap new.
 	flap attachTo: world.
-	world forceLayout.
-	self assert: flap parent equals: world.
+	parent forceLayout.
 	self assert: flap position equals: -90 @ 50
 ]
 
 { #category : 'tests' }
 BoFlapTest >> testIsClosedByDefault [
 	self deny: BoFlap new isOpen
+]
+
+{ #category : 'tests' }
+BoFlapTest >> testResizeToIsClampedToMinimum [
+	| flap |
+	flap := BoFlap new.
+	flap resizeTo: 5.
+	self assert: flap thickness equals: flap minThickness.
+	self assert: flap isOpen
 ]
 
 { #category : 'tests' }

@@ -39,8 +39,20 @@ BoFlapEdge >> arrangePane: aPane tab: aTab in: aFlap [
 ]
 
 { #category : 'positions' }
+BoFlapEdge >> availableThicknessOf: aFlap in: aWorldExtent [
+	^ self subclassResponsibility
+]
+
+{ #category : 'positions' }
 BoFlapEdge >> closedPositionOf: aFlap in: aWorldExtent [
 	"Only the tab of aFlap stays visible"
+
+	^ self subclassResponsibility
+]
+
+{ #category : 'resizing' }
+BoFlapEdge >> growthFor: aDelta [
+	"Return how much the pane grows when the pointer moves by aDelta"
 
 	^ self subclassResponsibility
 ]

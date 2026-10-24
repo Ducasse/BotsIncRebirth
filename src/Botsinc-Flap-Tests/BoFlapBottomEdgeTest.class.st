@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : 'tests' }
+BoFlapBottomEdgeTest >> testGrowth [
+	self assert: (BoFlapEdge bottom growthFor: 10 @ 3) equals: -3
+]
+
+{ #category : 'tests' }
 BoFlapBottomEdgeTest >> testPositions [
 	| edge |
 	edge := BoFlapEdge bottom.

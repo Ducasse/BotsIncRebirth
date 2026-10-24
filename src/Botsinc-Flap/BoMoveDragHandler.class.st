@@ -26,11 +26,15 @@ BoMoveDragHandler >> dragEvent: anEvent [
 
 { #category : 'event handling' }
 BoMoveDragHandler >> dragStartEvent: anEvent [
-	anEvent consumed: true.
-	offset := anEvent currentTarget globalPointToLocal: anEvent position
+	anEvent consumed: true
 ]
 
 { #category : 'accessing' }
 BoMoveDragHandler >> eventsToHandle [
-	^ { BlDragStartEvent. BlDragEvent. BlDragEndEvent }
+	^ { BlMouseDownEvent. BlDragStartEvent. BlDragEvent. BlDragEndEvent }
+]
+
+{ #category : 'event handling' }
+BoMoveDragHandler >> mouseDownEvent: anEvent [
+	offset := anEvent currentTarget globalPointToLocal: anEvent position
 ]

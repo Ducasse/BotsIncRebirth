@@ -15,7 +15,7 @@ BoFlapBottomEdge >> arrangePane: aPane tab: aTab in: aFlap [
 
 { #category : 'positions' }
 BoFlapBottomEdge >> closedPositionOf: aFlap in: aWorldExtent [
-	^ (self crossPositionOf: aFlap in: aWorldExtent) @ (aWorldExtent y - aFlap tabThickness)
+	^ 0 @ (aWorldExtent y - aFlap tabThickness)
 ]
 
 { #category : 'resizing' }
@@ -25,5 +25,5 @@ BoFlapBottomEdge >> growthFor: aDelta [
 
 { #category : 'positions' }
 BoFlapBottomEdge >> openPositionOf: aFlap in: aWorldExtent [
-	^ (self crossPositionOf: aFlap in: aWorldExtent) @ (aWorldExtent y - aFlap thickness - aFlap tabThickness)
+	^ 0 @ (aWorldExtent y - aFlap thickness - aFlap tabThickness)
 ]

@@ -70,7 +70,9 @@ BoFlapEdge >> openPositionOf: aFlap in: aWorldExtent [
 ]
 
 { #category : 'layout' }
-BoFlapEdge >> paneExtentFor: aFlap [
+BoFlapEdge >> paneExtentFor: aFlap in: aWorldExtent [
+	"The pane spans the whole side of the world"
+
 	^ self subclassResponsibility
 ]
 

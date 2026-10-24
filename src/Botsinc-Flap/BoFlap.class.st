@@ -1,5 +1,5 @@
 "
-I am a flap, in the spirit of Squeak Supplies flaps: a drawer stuck to one edge of a world element, holding prototypes of graphical objects.
+I am a flap, in the spirit of Squeak Supplies flaps: a drawer stuck to one edge of a world element, holding prototypes of graphical objects. I span the whole side of the world I am attached to, and follow it when it is resized.
 
 Clicking my tab slides me open or closed. Dragging one of my items drops a fresh copy into the world. Since Bloc elements cannot be copied, I store prototypes as blocks that create a new element each time.
 
@@ -29,7 +29,6 @@ Class {
 		'tab',
 		'prototypes',
 		'thickness',
-		'length',
 		'tabThickness',
 		'tabLength'
 	],
@@ -78,8 +77,8 @@ BoFlap >> attachTo: aWorldElement [
 	aWorldElement addChild: self.
 	aWorldElement
 		addEventHandlerOn: BlElementExtentChangedEvent
-		do: [ :anEvent | self updatePosition ].
-	self updatePosition
+		do: [ :anEvent | self updateGeometry ].
+	self updateGeometry
 ]
 
 { #category : 'opening' }
@@ -113,7 +112,6 @@ BoFlap >> initialize [
 	open := false.
 	prototypes := OrderedCollection new.
 	thickness := 90.
-	length := 300.
 	tabThickness := 22.
 	tabLength := 70.
 	pane := self newPane.
@@ -133,19 +131,6 @@ BoFlap >> isOpen [
 { #category : 'accessing' }
 BoFlap >> items [
 	^ pane children
-]
-
-{ #category : 'accessing' }
-BoFlap >> length [
-	"Return the size of the pane along the edge"
-
-	^ length
-]
-
-{ #category : 'accessing' }
-BoFlap >> length: aNumber [
-	length := aNumber.
-	self rebuild
 ]
 
 { #category : 'accessing' }
@@ -216,10 +201,9 @@ BoFlap >> prototypes [
 BoFlap >> rebuild [
 	self removeChildren.
 	self layout: edge layout.
-	pane extent: (edge paneExtentFor: self).
 	tab extent: (edge tabExtentFor: self).
 	edge arrangePane: pane tab: tab in: self.
-	self updatePosition
+	self updateGeometry
 ]
 
 { #category : 'resizing' }
@@ -282,7 +266,10 @@ BoFlap >> toggle [
 ]
 
 { #category : 'private' }
-BoFlap >> updatePosition [
+BoFlap >> updateGeometry [
+	"Size the pane to the side of the world and place the flap"
+
 	self hasParent ifFalse: [ ^ self ].
+	pane extent: (edge paneExtentFor: self in: self parent extent).
 	self position: self currentPosition
 ]

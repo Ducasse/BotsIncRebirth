@@ -17,8 +17,8 @@ BoFlapBottomEdgeTest >> testGrowth [
 BoFlapBottomEdgeTest >> testPositions [
 	| edge |
 	edge := BoFlapEdge bottom.
-	self assert: (edge openPositionOf: flap in: self worldExtent) equals: 150 @ 288.
-	self assert: (edge closedPositionOf: flap in: self worldExtent) equals: 150 @ 378
+	self assert: (edge openPositionOf: flap in: self worldExtent) equals: 0 @ 288.
+	self assert: (edge closedPositionOf: flap in: self worldExtent) equals: 0 @ 378
 ]
 
 { #category : 'tests' }

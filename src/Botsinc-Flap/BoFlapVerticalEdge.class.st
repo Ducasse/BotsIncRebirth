@@ -13,19 +13,14 @@ BoFlapVerticalEdge >> availableThicknessOf: aFlap in: aWorldExtent [
 	^ aWorldExtent x - aFlap tabThickness
 ]
 
-{ #category : 'positions' }
-BoFlapVerticalEdge >> crossPositionOf: aFlap in: aWorldExtent [
-	^ (aWorldExtent y - aFlap length) / 2
-]
-
 { #category : 'layout' }
 BoFlapVerticalEdge >> layout [
 	^ BlLinearLayout horizontal alignCenter
 ]
 
 { #category : 'layout' }
-BoFlapVerticalEdge >> paneExtentFor: aFlap [
-	^ aFlap thickness @ aFlap length
+BoFlapVerticalEdge >> paneExtentFor: aFlap in: aWorldExtent [
+	^ aFlap thickness @ aWorldExtent y
 ]
 
 { #category : 'layout' }

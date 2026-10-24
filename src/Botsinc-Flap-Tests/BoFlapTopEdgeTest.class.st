@@ -16,8 +16,8 @@ BoFlapTopEdgeTest >> testGrowth [
 { #category : 'tests' }
 BoFlapTopEdgeTest >> testPaneIsWide [
 	flap edge: BoFlapEdge top.
-	flap forceLayout.
-	self assert: flap pane extent equals: 300 @ 90.
+	self attachToWorld.
+	self assert: flap pane extent equals: 600 @ 90.
 	self assert: flap tab extent equals: 70 @ 22
 ]
 
@@ -25,6 +25,6 @@ BoFlapTopEdgeTest >> testPaneIsWide [
 BoFlapTopEdgeTest >> testPositions [
 	| edge |
 	edge := BoFlapEdge top.
-	self assert: (edge openPositionOf: flap in: self worldExtent) equals: 150 @ 0.
-	self assert: (edge closedPositionOf: flap in: self worldExtent) equals: 150 @ -90
+	self assert: (edge openPositionOf: flap in: self worldExtent) equals: 0 @ 0.
+	self assert: (edge closedPositionOf: flap in: self worldExtent) equals: 0 @ -90
 ]

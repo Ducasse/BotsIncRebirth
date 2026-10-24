@@ -35,12 +35,26 @@ BoFlapTest >> testAttachPlacesFlapClosed [
 	flap := BoFlap new.
 	flap attachTo: world.
 	parent forceLayout.
-	self assert: flap position equals: -90 @ 50
+	self assert: flap position equals: -90 @ 0
 ]
 
 { #category : 'tests' }
 BoFlapTest >> testIsClosedByDefault [
 	self deny: BoFlap new isOpen
+]
+
+{ #category : 'tests' }
+BoFlapTest >> testPaneFollowsWorldResize [
+	| parent world flap |
+	parent := BlElement new extent: 600 @ 400; yourself.
+	world := BlElement new.
+	parent addChild: world.
+	flap := BoFlap new.
+	flap attachTo: world.
+	parent forceLayout.
+	parent extent: 500 @ 300.
+	parent forceLayout.
+	self assert: flap pane extent equals: 90 @ 300
 ]
 
 { #category : 'tests' }

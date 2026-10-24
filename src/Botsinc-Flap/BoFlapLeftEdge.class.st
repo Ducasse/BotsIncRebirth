@@ -1,0 +1,24 @@
+"
+I am the left edge of a world.
+"
+Class {
+	#name : 'BoFlapLeftEdge',
+	#superclass : 'BoFlapVerticalEdge',
+	#category : 'Botsinc-Flap',
+	#package : 'Botsinc-Flap'
+}
+
+{ #category : 'layout' }
+BoFlapLeftEdge >> arrangePane: aPane tab: aTab in: aFlap [
+	aFlap addChildren: { aPane. aTab }
+]
+
+{ #category : 'positions' }
+BoFlapLeftEdge >> closedPositionOf: aFlap in: aWorldExtent [
+	^ aFlap thickness negated @ (self crossPositionOf: aFlap in: aWorldExtent)
+]
+
+{ #category : 'positions' }
+BoFlapLeftEdge >> openPositionOf: aFlap in: aWorldExtent [
+	^ 0 @ (self crossPositionOf: aFlap in: aWorldExtent)
+]

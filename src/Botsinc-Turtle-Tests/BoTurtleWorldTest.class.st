@@ -150,6 +150,15 @@ BoTurtleWorldTest >> testPointAtAnotherTurtle [
 	self assert: bob direction equals: -135
 ]
 
+{ #category : 'tests' }
+BoTurtleWorldTest >> testRegisteredInteractionsAreInstalledOnNewWorlds [
+
+	BoTurtleWorld registerInteraction: [ :aWorld | aWorld userData at: #testInteraction put: true ] named: #testInteraction.
+	[ self assert: (BoTurtleWorld new userData at: #testInteraction ifAbsent: [ false ]) ] ensure: [
+		BoTurtleWorld unregisterInteractionNamed: #testInteraction ].
+	self deny: (BoTurtleWorld new userData includesKey: #testInteraction)
+]
+
 { #category : 'tests - removing' }
 BoTurtleWorldTest >> testRemoveAllTurtles [
 	world newTurtle.

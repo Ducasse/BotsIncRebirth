@@ -10,6 +10,9 @@ Class {
 		'trails',
 		'turtles'
 	],
+	#classVars : [
+		'InteractionInstallers'
+	],
 	#category : 'Botsinc-Turtle',
 	#package : 'Botsinc-Turtle'
 }
@@ -32,6 +35,28 @@ BoTurtleWorld class >> example [
 	1 to: 40 do: [ :i | triangle go: i * 3; turnLeft: 30 ].
 	world openInSpace.
 	^ world
+]
+
+{ #category : 'interactions' }
+BoTurtleWorld class >> interactionInstallers [
+	"Return the blocks, indexed by name, that install an interaction on each new world. Other packages add theirs with registerInteraction:named:, see initializeInteractions"
+
+	^ InteractionInstallers ifNil: [ InteractionInstallers := Dictionary new ]
+
+]
+
+{ #category : 'interactions' }
+BoTurtleWorld class >> registerInteraction: aBlock named: aSymbol [
+	"aBlock will be evaluated with each new world as argument"
+
+	self interactionInstallers at: aSymbol put: aBlock
+
+]
+
+{ #category : 'interactions' }
+BoTurtleWorld class >> unregisterInteractionNamed: aSymbol [
+	self interactionInstallers removeKey: aSymbol ifAbsent: [ ]
+
 ]
 
 { #category : 'drawing' }
@@ -79,7 +104,17 @@ BoTurtleWorld >> initialize [
 			c vertical matchParent ];
 		preventMouseEvents;
 		yourself.
-	self addChild: trails
+	self addChild: trails.
+	self initializeInteractions
+
+]
+
+{ #category : 'initialization' }
+BoTurtleWorld >> initializeInteractions [
+	"Let the packages that registered an interaction install it on the receiver, see BoTurtleWorld class>>registerInteraction:named:"
+
+	self class interactionInstallers do: [ :each | each value: self ]
+
 ]
 
 { #category : 'adding' }

@@ -77,6 +77,13 @@ BoFlapEdge >> paneExtentFor: aFlap in: aWorldExtent [
 ]
 
 { #category : 'layout' }
+BoFlapEdge >> tabCornerRadii: aRadius [
+	"Return the corner radii of the tab: the corners touching the pane are square, the other ones are rounded by aRadius"
+
+	^ self subclassResponsibility
+]
+
+{ #category : 'layout' }
 BoFlapEdge >> tabExtentFor: aFlap [
 	^ self subclassResponsibility
 ]

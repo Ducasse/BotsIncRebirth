@@ -27,3 +27,14 @@ BoFlapBottomEdge >> growthFor: aDelta [
 BoFlapBottomEdge >> openPositionOf: aFlap in: aWorldExtent [
 	^ 0 @ (aWorldExtent y - aFlap thickness - aFlap tabThickness)
 ]
+
+{ #category : 'layout' }
+BoFlapBottomEdge >> tabCornerRadii: aRadius [
+
+	^ BlCornerRadii new
+		  topLeft: aRadius;
+		  topRight: aRadius;
+		  bottomLeft: 0;
+		  bottomRight: 0;
+		  yourself
+]

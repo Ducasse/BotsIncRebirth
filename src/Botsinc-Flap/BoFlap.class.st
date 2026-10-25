@@ -174,11 +174,12 @@ BoFlap >> newPane [
 
 { #category : 'initialization' }
 BoFlap >> newTab [
+	"The geometry of the tab depends on the edge, see rebuild"
+
 	^ BlElement new
-		background: Color orange;
-		geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
-		addEventHandler: (BoFlapTabHandler flap: self);
-		yourself
+		  background: Color orange;
+		  addEventHandler: (BoFlapTabHandler flap: self);
+		  yourself
 ]
 
 { #category : 'opening' }
@@ -199,9 +200,11 @@ BoFlap >> prototypes [
 
 { #category : 'private' }
 BoFlap >> rebuild [
+
 	self removeChildren.
 	self layout: edge layout.
 	tab extent: (edge tabExtentFor: self).
+	tab geometry: (BlRoundedRectangleGeometry cornerRadii: (edge tabCornerRadii: 6)).
 	edge arrangePane: pane tab: tab in: self.
 	self updateGeometry
 ]

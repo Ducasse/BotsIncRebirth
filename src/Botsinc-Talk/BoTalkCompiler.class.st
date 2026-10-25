@@ -1,7 +1,7 @@
 "
 I compile the code typed in a talk bubble so that it can be run with the receiver of the bubble as self.
 
-A statement that does not say to whom it speaks is sent to the receiver: 'go: 100; turn: 90' becomes 'self go: 100; turn: 90' and 'home' becomes 'self home'. A statement starting with a variable, a global, a literal or self is left as is. Assigning an undeclared variable creates it in the environment.
+A top-level statement that does not say to whom it speaks is sent to the receiver: 'go: 100; turn: 90' becomes 'self go: 100; turn: 90' and 'home' becomes 'self home'. A statement starting with a variable, a global, a literal or self is left as is. Inside a block nothing is changed: self must be written, so '4 timesRepeat: [ go: 100 ]' does not compile while '4 timesRepeat: [ self go: 100 ]' does. Assigning an undeclared variable creates it in the environment.
 
 	(BoTalkCompiler receiver: BoTurtle new environment: BoTalkEnvironment new) intendedSource: 'go: 100'
 "

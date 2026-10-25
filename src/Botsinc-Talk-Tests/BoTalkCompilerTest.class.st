@@ -109,6 +109,22 @@ BoTalkCompilerTest >> testMessageIsSentToTheReceiver [
 
 ]
 
+{ #category : 'tests - compiling' }
+BoTalkCompilerTest >> testMessageWithoutReceiverInBlockIsAnError [
+	self should: [ compiler compile: '4 timesRepeat: [ go: 100; turn: 90 ]' ] raise: BoTalkError.
+	self should: [ compiler compile: '4 timesRepeat: [ home ]' ] raise: BoTalkError
+
+]
+
+{ #category : 'tests - intended source' }
+BoTalkCompilerTest >> testMessagesInBlocksAreUnchanged [
+	"Only the statements typed at the top level are sent to the receiver: inside a block, self must be written"
+
+	self assertUnchanged: '4 timesRepeat: [ go: 100; turn: 90 ]'.
+	self assertUnchanged: '[ home ] value'
+
+]
+
 { #category : 'tests - intended source' }
 BoTalkCompilerTest >> testPseudoVariablesAreUnchanged [
 	self assertUnchanged: 'self go: 3'.
@@ -121,6 +137,15 @@ BoTalkCompilerTest >> testPseudoVariablesAreUnchanged [
 BoTalkCompilerTest >> testResultIsReturned [
 	self assert: (self evaluate: 'direction + 5') equals: 5
 
+]
+
+{ #category : 'tests - compiling' }
+BoTalkCompilerTest >> testSelfInBlockSpeaksToTheReceiver [
+	"A square brings the turtle back to its start"
+
+	self evaluate: '4 timesRepeat: [ self go: 100; turn: 90 ]'.
+	self assert: turtle center equals: 0 @ 0.
+	self assert: turtle direction equals: 0
 ]
 
 { #category : 'tests - compiling' }

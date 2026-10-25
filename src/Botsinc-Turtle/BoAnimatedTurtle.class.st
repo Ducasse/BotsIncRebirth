@@ -40,9 +40,11 @@ BoAnimatedTurtle class >> example [
 
 { #category : 'scripting' }
 BoAnimatedTurtle >> animate: aBlock [
-	"Run aBlock with the receiver as argument in its own process so that the world is redrawn between the steps"
+	"Run aBlock with the receiver as argument in its own process so that the world is redrawn between the steps. The whole script holds the receiver, so two scripts of the same turtle run one after the other"
 
-	^ [ aBlock value: self ] forkAt: Processor userBackgroundPriority named: 'BoTurtle script'
+	^ [ self performAction: [ aBlock value: self ] ]
+		forkAt: Processor userBackgroundPriority
+		named: 'BoTurtle script'
 ]
 
 { #category : 'private' }

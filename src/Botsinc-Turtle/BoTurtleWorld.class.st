@@ -7,7 +7,8 @@ Class {
 	#name : 'BoTurtleWorld',
 	#superclass : 'BlElement',
 	#instVars : [
-		'trails'
+		'trails',
+		'turtles'
 	],
 	#category : 'Botsinc-Turtle',
 	#package : 'Botsinc-Turtle'
@@ -15,19 +16,19 @@ Class {
 
 { #category : 'examples' }
 BoTurtleWorld class >> example [
-	"Three turtles, one for each look, drawing a square, a star and a spiral"
+	"Three turtles, one for each look, drawing a square, a star and a spiral. Since jumpTo: changes the heading, each turtle sets it before drawing"
 
 	<sampleInstance>
 	| world bot circle triangle |
 	world := self new.
 	bot := world newTurtle.
-	bot jumpTo: 150 @ 200; penColor: Color blue; penSize: 2.
+	bot jumpTo: 150 @ 200; east; penColor: Color blue; penSize: 2.
 	4 timesRepeat: [ bot go: 100; turnLeft: 90 ].
 	circle := world newTurtle.
-	circle lookLikeCircle; color: Color green; jumpTo: 400 @ 150; penColor: Color red.
+	circle lookLikeCircle; color: Color green; jumpTo: 400 @ 150; east; penColor: Color red.
 	5 timesRepeat: [ circle go: 120; turnRight: 144 ].
 	triangle := world newTurtle.
-	triangle lookLikeTriangle; color: Color orange; jumpTo: 620 @ 300; penColor: Color magenta.
+	triangle lookLikeTriangle; color: Color orange; jumpTo: 620 @ 300; east; penColor: Color magenta.
 	1 to: 40 do: [ :i | triangle go: i * 3; turnLeft: 30 ].
 	world openInSpace.
 	^ world
@@ -42,8 +43,10 @@ BoTurtleWorld >> addLine: aSegment [
 BoTurtleWorld >> addTurtle: aTurtle [
 	"Add aTurtle at the center of the receiver"
 
+	turtles add: aTurtle.
+	aTurtle world: self.
 	self addChild: aTurtle.
-	aTurtle home.
+	aTurtle placeAt: self startingPlace.
 	^ aTurtle
 ]
 
@@ -63,25 +66,20 @@ BoTurtleWorld >> drawLineFrom: startPoint to: endPoint color: aColor width: aNum
 
 { #category : 'initialization' }
 BoTurtleWorld >> initialize [
-
 	super initialize.
+	turtles := OrderedCollection new.
 	self
 		background: Color white;
 		constraintsDo: [ :c |
-				c horizontal matchParent.
-				c vertical matchParent ].
+			c horizontal matchParent.
+			c vertical matchParent ].
 	trails := BlElement new
-		          constraintsDo: [ :c |
-				          c horizontal matchParent.
-				          c vertical matchParent ];
-		          preventMouseEvents;
-		          yourself.
+		constraintsDo: [ :c |
+			c horizontal matchParent.
+			c vertical matchParent ];
+		preventMouseEvents;
+		yourself.
 	self addChild: trails
-]
-
-{ #category : 'testing' }
-BoTurtleWorld >> isTurtleWorld [
-	^ true
 ]
 
 { #category : 'adding' }
@@ -110,9 +108,15 @@ BoTurtleWorld >> newTurtle [
 ]
 
 { #category : 'adding' }
-BoTurtleWorld >> removeTurtles [
+BoTurtleWorld >> removeTurtle: aTurtle [
+	turtles remove: aTurtle.
+	aTurtle world: nil.
+	aTurtle removeFromParent
+]
 
-	self turtles do: [ :each | each removeFromParent ]
+{ #category : 'adding' }
+BoTurtleWorld >> removeTurtles [
+	turtles copy do: [ :each | self removeTurtle: each ]
 ]
 
 { #category : 'drawing' }
@@ -147,6 +151,5 @@ BoTurtleWorld >> trails [
 
 { #category : 'accessing' }
 BoTurtleWorld >> turtles [
-
-	^ self children select: [ :each | each isTurtle ]
+	^ turtles
 ]

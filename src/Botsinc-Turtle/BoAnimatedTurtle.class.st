@@ -33,7 +33,7 @@ BoAnimatedTurtle class >> example [
 	turtle := world newAnimatedTurtle.
 	turtle penColor: Color blue.
 	turtle animate: [ :t |
-		t jumpTo: 300 @ 300.
+		t jumpTo: 300 @ 300; east.
 		36 timesRepeat: [ t go: 200; turnLeft: 170 ] ].
 	^ world
 ]
@@ -52,12 +52,12 @@ BoAnimatedTurtle >> degreesPerStep [
 
 { #category : 'basic operations' }
 BoAnimatedTurtle >> go: distance [
-	self performAction: [ self stepwiseGoTo: (self positionInDirectionForDistance: distance) trail: true ]
+	self performAction: [ super go: distance ]
 ]
 
 { #category : 'basic operations' }
 BoAnimatedTurtle >> goTo: aPoint [
-	self performAction: [ self stepwiseGoTo: aPoint trail: true ]
+	self performAction: [ super goTo: aPoint ]
 ]
 
 { #category : 'private' }
@@ -85,8 +85,36 @@ BoAnimatedTurtle >> isAnimating [
 ]
 
 { #category : 'basic operations' }
+BoAnimatedTurtle >> jump: distance [
+	self performAction: [ super jump: distance ]
+]
+
+{ #category : 'basic operations' }
 BoAnimatedTurtle >> jumpTo: aPoint [
-	self performAction: [ self stepwiseGoTo: aPoint trail: false ]
+	self performAction: [ super jumpTo: aPoint ]
+]
+
+{ #category : 'private' }
+BoAnimatedTurtle >> moveTo: aPoint trail: aBoolean [
+	"Move to aPoint in small steps. A single segment of the trail follows the receiver"
+
+	| start steps segment |
+	self isAnimating ifFalse: [ ^ super moveTo: aPoint trail: aBoolean ].
+	start := location.
+	segment := (aBoolean and: [ self turtleWorld notNil ])
+		ifTrue: [ self newTrailFrom: start ]
+		ifFalse: [ nil ].
+	steps := ((start distanceTo: aPoint) / self pixelsPerStep) ceiling max: 1.
+	1 to: steps do: [ :i |
+		| aLocation |
+		aLocation := i = steps
+			ifTrue: [ aPoint ]
+			ifFalse: [ start + ((aPoint - start) * i / steps) ].
+		location := aLocation.
+		segment ifNotNil: [
+			self inUIDo: [ self turtleWorld setLine: segment from: start to: aLocation ] ].
+		self updatePosition.
+		self waitStep ]
 ]
 
 { #category : 'private' }
@@ -128,51 +156,30 @@ BoAnimatedTurtle >> stepDuration [
 ]
 
 { #category : 'private' }
-BoAnimatedTurtle >> stepwiseGoTo: aPoint trail: aBoolean [
-	"Move to aPoint in small steps. A single segment of the trail follows the receiver"
+BoAnimatedTurtle >> stepwiseTurn: degrees to: anAngle [
+	"Turn by degrees in small steps. The last step sets anAngle exactly, so that no rounding error accumulates"
 
-	| start steps segment |
-	self isAnimating ifFalse: [
-		aBoolean ifTrue: [ self drawTrailFrom: location to: aPoint ].
-		location := aPoint.
-		^ self updatePosition ].
-	start := location.
-	segment := (aBoolean and: [ self turtleWorld notNil ])
-		ifTrue: [ self newTrailFrom: start ]
-		ifFalse: [ nil ].
-	steps := ((start distanceTo: aPoint) / self pixelsPerStep) ceiling max: 1.
-	1 to: steps do: [ :i |
-		| aLocation |
-		aLocation := i = steps
-			ifTrue: [ aPoint ]
-			ifFalse: [ start + ((aPoint - start) * i / steps) ].
-		location := aLocation.
-		segment ifNotNil: [
-			self inUIDo: [ self turtleWorld setLine: segment from: start to: aLocation ] ].
-		self updatePosition.
-		self waitStep ]
-]
-
-{ #category : 'private' }
-BoAnimatedTurtle >> stepwiseTurn: degrees [
 	| start steps |
-	self isAnimating ifFalse: [ ^ self direction: direction + degrees ].
-	degrees = 0 ifTrue: [ ^ self ].
+	(self isAnimating and: [ degrees ~= 0 ]) ifFalse: [ ^ self direction: anAngle ].
 	start := direction.
 	steps := (degrees abs / self degreesPerStep) ceiling max: 1.
-	1 to: steps do: [ :i |
+	1 to: steps - 1 do: [ :i |
 		self direction: start + (degrees * i / steps).
-		self waitStep ]
+		self waitStep ].
+	self direction: anAngle.
+	self waitStep
 ]
 
 { #category : 'turning' }
 BoAnimatedTurtle >> turn: degrees [
-	self performAction: [ self stepwiseTurn: degrees ]
+	self performAction: [ self stepwiseTurn: degrees to: direction + degrees ]
 ]
 
 { #category : 'turning' }
 BoAnimatedTurtle >> turnTo: anAngle [
-	self performAction: [ self stepwiseTurn: (self canonicalAngle: anAngle - direction) ]
+	"Turn by the shortest way"
+
+	self performAction: [ self stepwiseTurn: (self canonicalAngle: anAngle - direction) to: anAngle ]
 ]
 
 { #category : 'private' }

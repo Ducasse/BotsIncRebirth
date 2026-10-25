@@ -21,7 +21,8 @@ Class {
 		'shape',
 		'vars',
 		'memorizedPoints',
-		'bodyExtent'
+		'bodyExtent',
+		'world'
 	],
 	#category : 'Botsinc-Turtle',
 	#package : 'Botsinc-Turtle'
@@ -226,7 +227,7 @@ BoTurtle >> extent: aPoint [
 	bodyExtent := aPoint.
 	super extent: aPoint.
 	self rebuildShape.
-	self jumpTo: location
+	self updatePosition
 ]
 
 { #category : 'looks' }
@@ -244,20 +245,28 @@ BoTurtle >> foreground [
 BoTurtle >> go: distance [
 	"Make the receiver go forward from a given distance, leaving a trail"
 
-	self goTo: (self positionInDirectionForDistance: distance)
+	self moveTo: (self positionInDirectionForDistance: distance) trail: true
 ]
 
 { #category : 'basic operations' }
 BoTurtle >> goTo: aPoint [
-	"Make the receiver go to aPoint, leaving a trail from its current location to aPoint"
+	"Make the receiver head to aPoint and go there, leaving a trail. The receiver keeps its new heading"
 
-	self drawTrailFrom: location to: aPoint.
-	self jumpTo: aPoint
+	self headTo: aPoint.
+	self moveTo: aPoint trail: true
+]
+
+{ #category : 'private' }
+BoTurtle >> headTo: aPoint [
+	"Make the receiver point at aPoint, unless it is already there"
+
+	aPoint = location ifTrue: [ ^ self ].
+	self pointAt: aPoint
 ]
 
 { #category : 'basic operations' }
 BoTurtle >> home [
-	"Place the receiver at the center of its world"
+	"Make the receiver jump to the center of its world. Like any jump, the receiver heads to the center"
 
 	self jumpTo: self startingPlace
 ]
@@ -277,11 +286,6 @@ BoTurtle >> initialize [
 	self extent: self defaultExtent
 ]
 
-{ #category : 'testing' }
-BoTurtle >> isTurtle [
-	^ true
-]
-
 { #category : 'variables' }
 BoTurtle >> isVariableDefined: aSymbol [
 	^ vars includesKey: aSymbol
@@ -291,15 +295,15 @@ BoTurtle >> isVariableDefined: aSymbol [
 BoTurtle >> jump: distance [
 	"Make the receiver go forward from a given distance without leaving a trail"
 
-	self jumpTo: (self positionInDirectionForDistance: distance)
+	self moveTo: (self positionInDirectionForDistance: distance) trail: false
 ]
 
 { #category : 'basic operations' }
 BoTurtle >> jumpTo: aPoint [
-	"Place the center of the receiver at aPoint without leaving a trail"
+	"Make the receiver head to aPoint and jump there without leaving a trail. The receiver keeps its new heading"
 
-	location := aPoint.
-	self updatePosition
+	self headTo: aPoint.
+	self moveTo: aPoint trail: false
 ]
 
 { #category : 'directions' }
@@ -327,6 +331,15 @@ BoTurtle >> lookLikeTriangle [
 { #category : 'memory' }
 BoTurtle >> memorizedPoints [
 	^ memorizedPoints
+]
+
+{ #category : 'private' }
+BoTurtle >> moveTo: aPoint trail: aBoolean [
+	"Place the center of the receiver at aPoint without changing its heading"
+
+	aBoolean ifTrue: [ self drawTrailFrom: location to: aPoint ].
+	location := aPoint.
+	self updatePosition
 ]
 
 { #category : 'absolute directions' }
@@ -362,6 +375,14 @@ BoTurtle >> penSize [
 { #category : 'pen' }
 BoTurtle >> penSize: aNumber [
 	penSize := aNumber
+]
+
+{ #category : 'private' }
+BoTurtle >> placeAt: aPoint [
+	"Put the center of the receiver at aPoint at once, without heading to it nor animation. Used to install the receiver in a world"
+
+	location := aPoint.
+	self updatePosition
 ]
 
 { #category : 'turning' }
@@ -474,9 +495,7 @@ BoTurtle >> turnTo: anAngle [
 BoTurtle >> turtleWorld [
 	"Return the world in which the receiver lives or nil"
 
-	^ (self hasParent and: [ self parent isTurtleWorld ])
-		ifTrue: [ self parent ]
-		ifFalse: [ nil ]
+	^ world
 ]
 
 { #category : 'directions' }
@@ -508,4 +527,11 @@ BoTurtle >> valueOf: aSymbol [
 { #category : 'absolute directions' }
 BoTurtle >> west [
 	self turnTo: 180
+]
+
+{ #category : 'accessing' }
+BoTurtle >> world: aTurtleWorld [
+	"Set the world in which the receiver lives, see BoTurtleWorld>>addTurtle:"
+
+	world := aTurtleWorld
 ]

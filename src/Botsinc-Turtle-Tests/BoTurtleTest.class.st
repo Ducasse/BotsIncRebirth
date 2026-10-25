@@ -96,6 +96,13 @@ BoTurtleTest >> testDistance [
 ]
 
 { #category : 'tests' }
+BoTurtleTest >> testGoKeepsHeading [
+	turtle turnTo: 30.
+	10 timesRepeat: [ turtle go: 17 ].
+	self assert: turtle direction equals: 30
+]
+
+{ #category : 'tests' }
 BoTurtleTest >> testGoLeavesATrail [
 	turtle jumpTo: 100 @ 100.
 	turtle east.
@@ -109,6 +116,16 @@ BoTurtleTest >> testGoLeavesATrail [
 ]
 
 { #category : 'tests' }
+BoTurtleTest >> testGoToHeadsToTarget [
+	turtle jumpTo: 100 @ 100.
+	turtle east.
+	turtle goTo: 200 @ 0.
+	self assert: turtle center equals: 200 @ 0.
+	self assert: turtle direction equals: 45.
+	self assert: world trails size equals: 1
+]
+
+{ #category : 'tests' }
 BoTurtleTest >> testHome [
 	self assert: turtle center equals: world startingPlace.
 	turtle jumpTo: 10 @ 10.
@@ -117,11 +134,40 @@ BoTurtleTest >> testHome [
 ]
 
 { #category : 'tests' }
+BoTurtleTest >> testHomeHeadsToCenter [
+	| expected |
+	turtle jumpTo: 10 @ 10.
+	turtle east.
+	expected := turtle absoluteAngleToPointAt: world startingPlace.
+	turtle home.
+	self assert: turtle center equals: world startingPlace.
+	self assert: (turtle direction closeTo: expected)
+]
+
+{ #category : 'tests' }
 BoTurtleTest >> testJumpLeavesNoTrail [
 	turtle jumpTo: 100 @ 100.
 	turtle west.
 	turtle jump: 50.
 	self assert: turtle center equals: 50 @ 100.
+	self assert: world trails isEmpty
+]
+
+{ #category : 'tests' }
+BoTurtleTest >> testJumpToCurrentPlaceKeepsHeading [
+	turtle jumpTo: 100 @ 100.
+	turtle north.
+	turtle jumpTo: 100 @ 100.
+	self assert: turtle direction equals: 90
+]
+
+{ #category : 'tests' }
+BoTurtleTest >> testJumpToHeadsToTarget [
+	turtle jumpTo: 100 @ 100.
+	turtle east.
+	turtle jumpTo: 100 @ 200.
+	self assert: turtle center equals: 100 @ 200.
+	self assert: turtle direction equals: -90.
 	self assert: world trails isEmpty
 ]
 
@@ -147,6 +193,14 @@ BoTurtleTest >> testMemorizedPoints [
 ]
 
 { #category : 'tests' }
+BoTurtleTest >> testNewTurtleIsAtCenterHeadingEast [
+	| second |
+	second := world newTurtle.
+	self assert: second center equals: world startingPlace.
+	self assert: second direction equals: 0
+]
+
+{ #category : 'tests' }
 BoTurtleTest >> testPointingAt [
 	turtle jumpTo: 100 @ 100.
 	turtle pointAt: 200 @ 0.
@@ -166,8 +220,24 @@ BoTurtleTest >> testPointingAt [
 ]
 
 { #category : 'tests' }
+BoTurtleTest >> testRestoreHeadingAfterJumpTo [
+	"jumpTo: leaves the turtle heading to where it jumped. To keep its heading, store the direction before the jump and set it back after"
+
+	| savedDirection |
+	turtle jumpTo: 100 @ 100.
+	turtle turnTo: 30.
+	savedDirection := turtle direction.
+	turtle jumpTo: 300 @ 100.
+	self assert: turtle direction equals: 0.
+	turtle turnTo: savedDirection.
+	self assert: turtle center equals: 300 @ 100.
+	self assert: turtle direction equals: 30
+]
+
+{ #category : 'tests' }
 BoTurtleTest >> testSquareComesBack [
 	turtle jumpTo: 100 @ 100.
+	turtle east.
 	4 timesRepeat: [ turtle go: 80; turnLeft: 90 ].
 	self assert: turtle center equals: 100 @ 100.
 	self assert: turtle direction equals: 0.

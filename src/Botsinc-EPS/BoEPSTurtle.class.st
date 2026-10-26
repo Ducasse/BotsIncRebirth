@@ -28,6 +28,7 @@ Or directly:
 	pica penSize: 3.
 	4 timesRepeat: [ pica go: 50; jump: -50; turnLeft: 90 ].
 	pica writeTo: 'cross.eps'
+	
 "
 Class {
 	#name : 'BoEPSTurtle',

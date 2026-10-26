@@ -1,7 +1,7 @@
 "
 I am a flap, in the spirit of Squeak Supplies flaps: a drawer stuck to one edge of a world element, holding prototypes of graphical objects. I span the whole side of the world I am attached to, and follow it when it is resized.
 
-Instead of prototypes, I can hold tools such as micro workspaces (see addContent:). They are placed along my edge, side by side in a top or bottom flap and stacked in a left or right flap, and share my pane equally, each filling its part.
+Instead of prototypes, I can hold tools such as micro workspaces (see addContent:). They are placed along my edge, side by side in a top or bottom flap and stacked in a left or right flap, and each takes its share of my pane (see addContent:share:): a micro workspace takes half of it.
 
 Clicking my tab slides me open or closed. Dragging one of my items drops a fresh copy into the world. Since Bloc elements cannot be copied, I store prototypes as blocks that create a new element each time.
 
@@ -63,14 +63,24 @@ BoFlap class >> example [
 
 { #category : 'adding' }
 BoFlap >> addContent: anElement [
-	"Add anElement, a tool such as a workspace, to the pane. The tools are placed along my edge and share the pane equally, each filling its part, even a tool that floats over its parent elsewhere, such as an inner window"
+	"Add anElement, a tool such as a workspace, to the pane, see addContent:share:"
+
+	self addContent: anElement share: 1
+]
+
+{ #category : 'adding' }
+BoFlap >> addContent: anElement share: aFraction [
+	"Add anElement, a tool such as a workspace, to the pane. The tools are placed along my edge. anElement takes aFraction of the length of the pane, 1 being the whole pane, and fills its thickness, even when it floats over its parent elsewhere, such as an inner window. When the shares of the tools add up to more than 1, the tools share the pane in proportion"
 
 	pane layout: edge contentLayout.
 	anElement constraintsDo: [ :c |
 			c accountByLayout.
 			c horizontal matchParent.
-			c vertical matchParent ].
-	pane addChild: anElement
+			c vertical matchParent.
+			c linear weight: aFraction ].
+	pane addChild: anElement.
+	anElement addEventHandlerOn: BlElementRemovedFromParentEvent do: [ :anEvent | self updateShares ].
+	self updateShares
 ]
 
 { #category : 'adding' }
@@ -307,4 +317,12 @@ BoFlap >> updateGeometry [
 	self hasParent ifFalse: [ ^ self ].
 	pane extent: (edge paneExtentFor: self in: self parent extent).
 	self position: self currentPosition
+]
+
+{ #category : 'private' }
+BoFlap >> updateShares [
+	"The length of the pane is 1, unless the tools ask for more, see addContent:share:"
+
+	(pane layout isKindOf: BlLinearLayout) ifFalse: [ ^ self ].
+	pane layout weightSum: ((pane children inject: 0 into: [ :sum :each | sum + each constraints linear weight ]) max: 1)
 ]

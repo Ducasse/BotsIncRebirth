@@ -126,6 +126,13 @@ BoMicroWorkspace >> doItAll [
 	^ self evaluate: codePane text
 ]
 
+{ #category : 'window' }
+BoMicroWorkspace >> dockedShare [
+	"A workspace takes half of the flap, so that two workspaces fit side by side"
+
+	^ 1 / 2
+]
+
 { #category : 'running' }
 BoMicroWorkspace >> evaluate: aString [
 	"Run aString with the world as receiver and show its result. Return the result, or nil when aString fails"

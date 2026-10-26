@@ -96,6 +96,21 @@ BoFlapTest >> testResizeToIsClampedToMinimum [
 ]
 
 { #category : 'tests' }
+BoFlapTest >> testSharesOverTheWholePaneAreProportional [
+
+	| flap first second |
+	flap := BoFlap new.
+	first := BlElement new.
+	second := BlElement new.
+	flap addContent: first share: 1 / 2.
+	self assert: flap pane layout weightSum equals: 1.
+	flap addContent: second.
+	self assert: flap pane layout weightSum equals: 3 / 2.
+	second removeFromParent.
+	self assert: flap pane layout weightSum equals: 1
+]
+
+{ #category : 'tests' }
 BoFlapTest >> testToggle [
 	| flap |
 	flap := BoFlap new.

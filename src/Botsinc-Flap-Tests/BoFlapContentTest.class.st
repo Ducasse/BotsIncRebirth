@@ -22,6 +22,26 @@ BoFlapContentTest >> testClickInContentDoesNotReachTheWorld [
 ]
 
 { #category : 'tests' }
+BoFlapContentTest >> testContentTakesItsShareOfThePane [
+
+	| bottomFlap content paneBounds |
+	bottomFlap := BoFlap new
+		              edge: BoFlapEdge bottom;
+		              thickness: 150;
+		              yourself.
+	bottomFlap attachTo: world.
+	content := BlElement new.
+	bottomFlap addContent: content share: 1 / 4.
+	bottomFlap open.
+	space settle.
+	(Delay forMilliseconds: 300) wait.
+	space settle.
+	paneBounds := bottomFlap pane bounds inSpace asRectangle insetBy: bottomFlap pane padding asMargin.
+	self assert: content bounds inSpace asRectangle height equals: paneBounds height.
+	self assert: content bounds inSpace asRectangle width equals: paneBounds width / 4
+]
+
+{ #category : 'tests' }
 BoFlapContentTest >> testContentsOfABottomFlapAreSideBySide [
 
 	| bottomFlap first second paneBounds |

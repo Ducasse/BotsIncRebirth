@@ -139,6 +139,17 @@ BoMicroToolsIntegrationTest >> testDockedBrowserFillsTheFlap [
 ]
 
 { #category : 'tests' }
+BoMicroToolsIntegrationTest >> testDockedWorkspaceTakesHalfOfTheFlap [
+
+	| paneBounds |
+	self showWorkspaceFlap.
+	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
+	self
+		assert: workspace window bounds inSpace asRectangle
+		equals: (paneBounds origin extent: paneBounds width / 2 @ paneBounds height)
+]
+
+{ #category : 'tests' }
 BoMicroToolsIntegrationTest >> testDragTitleBarPullsTheBrowserOutOfTheFlap [
 
 	| titleBar before after |
@@ -179,19 +190,7 @@ BoMicroToolsIntegrationTest >> testFlapIsOpenAndShowsTheCategories [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testPulledOutWorkspaceRunsScriptsOnTheWorld [
-
-	self showWorkspaceFlap.
-	workspace window topBarElement eventSimulator dragBy: 100 @ -200.
-	self settle.
-	workspace codePane text: 'self newTurtle'.
-	workspace doItAll.
-	self settle.
-	self assert: world turtles size equals: 1
-]
-
-{ #category : 'tests' }
-BoMicroToolsIntegrationTest >> testPullingOutAWorkspaceGivesTheWholeFlapToTheOther [
+BoMicroToolsIntegrationTest >> testPulledOutWorkspaceLeavesTheOtherOnItsHalf [
 
 	| other paneBounds |
 	other := BoMicroWorkspace on: world.
@@ -202,7 +201,21 @@ BoMicroToolsIntegrationTest >> testPullingOutAWorkspaceGivesTheWholeFlapToTheOth
 	self deny: other isInFlap.
 	self assert: other isResizable.
 	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
-	self assert: workspace window bounds inSpace asRectangle equals: paneBounds
+	self
+		assert: workspace window bounds inSpace asRectangle
+		equals: (paneBounds origin extent: paneBounds width / 2 @ paneBounds height)
+]
+
+{ #category : 'tests' }
+BoMicroToolsIntegrationTest >> testPulledOutWorkspaceRunsScriptsOnTheWorld [
+
+	self showWorkspaceFlap.
+	workspace window topBarElement eventSimulator dragBy: 100 @ -200.
+	self settle.
+	workspace codePane text: 'self newTurtle'.
+	workspace doItAll.
+	self settle.
+	self assert: world turtles size equals: 1
 ]
 
 { #category : 'tests' }

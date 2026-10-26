@@ -29,12 +29,19 @@ BoMicroTool >> defaultExtent [
 
 { #category : 'window' }
 BoMicroTool >> dockIn: aFlap [
-	"Place the window of the receiver in aFlap, next to the tools already there. The window fills its part of the flap, so it cannot be resized nor maximized. Return the window"
+	"Place the window of the receiver in aFlap, next to the tools already there, taking its share of the flap (see dockedShare). The window fills its part of the flap, so it cannot be resized nor maximized. Return the window"
 
 	self window removeFromParent.
 	self beResizable: false.
-	aFlap addContent: self window.
+	aFlap addContent: self window share: self dockedShare.
 	^ self window
+]
+
+{ #category : 'window' }
+BoMicroTool >> dockedShare [
+	"Return the part of the length of a flap that the window takes when docked, 1 being the whole flap"
+
+	^ 1
 ]
 
 { #category : 'window' }

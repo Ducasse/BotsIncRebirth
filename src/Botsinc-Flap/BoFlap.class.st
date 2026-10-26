@@ -87,6 +87,20 @@ BoFlap >> close [
 	self slideToCurrentPosition
 ]
 
+{ #category : 'adding' }
+BoFlap >> content: anElement [
+	"Fill the pane with anElement, a tool such as a workspace, instead of prototypes. The clicks in the pane do not reach the world, so that they do not open talk bubbles"
+
+	pane
+		removeChildren;
+		layout: BlFrameLayout new;
+		addEventHandlerOn: BlClickEvent do: [ :anEvent | anEvent consumed: true ].
+	anElement constraintsDo: [ :c |
+			c horizontal matchParent.
+			c vertical matchParent ].
+	pane addChild: anElement
+]
+
 { #category : 'private' }
 BoFlap >> currentPosition [
 	^ open

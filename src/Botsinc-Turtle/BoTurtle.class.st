@@ -28,6 +28,16 @@ Class {
 	#package : 'Botsinc-Turtle'
 }
 
+{ #category : 'instance creation' }
+BoTurtle class >> new [
+	"A turtle created while a script of a micro workspace runs goes in the world of the workspace, see BoCurrentWorld"
+
+	| turtle |
+	turtle := super new.
+	BoCurrentWorld value ifNotNil: [ :aWorld | aWorld addTurtle: turtle ].
+	^ turtle
+]
+
 { #category : 'operations' }
 BoTurtle >> absoluteAngleToPointAt: aPoint [
 	"Return the direction the receiver should have to point at aPoint"

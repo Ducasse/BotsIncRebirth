@@ -39,6 +39,19 @@ BoFlapTest >> testAttachPlacesFlapClosed [
 ]
 
 { #category : 'tests' }
+BoFlapTest >> testContentFillsThePane [
+
+	| flap content |
+	flap := BoFlap new.
+	flap addPrototype: [ BlElement new ].
+	content := BlElement new.
+	flap content: content.
+	self assert: flap pane children asArray equals: { content }.
+	self assert: content constraints horizontal resizer isMatchParent.
+	self assert: content constraints vertical resizer isMatchParent
+]
+
+{ #category : 'tests' }
 BoFlapTest >> testIsClosedByDefault [
 	self deny: BoFlap new isOpen
 ]

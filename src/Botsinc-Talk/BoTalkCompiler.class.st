@@ -10,7 +10,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'receiver',
-		'environment'
+		'environment',
+		'addsReceivers'
 	],
 	#category : 'Botsinc-Talk',
 	#package : 'Botsinc-Talk'
@@ -20,6 +21,19 @@ Class {
 BoTalkCompiler class >> receiver: anObject environment: aTalkEnvironment [
 	^ self new setReceiver: anObject environment: aTalkEnvironment
 
+]
+
+{ #category : 'accessing' }
+BoTalkCompiler >> addsReceivers [
+
+	^ addsReceivers
+]
+
+{ #category : 'accessing' }
+BoTalkCompiler >> addsReceivers: aBoolean [
+	"When aBoolean is true, as in the bubbles, a statement that does not say to whom it speaks is sent to the receiver (see intendedSource:). When it is false, as in the micro workspace, the code is compiled as it is written"
+
+	addsReceivers := aBoolean
 ]
 
 { #category : 'private' }
@@ -54,18 +68,21 @@ BoTalkCompiler >> compile: aString [
 	"Return a method that runs aString with the receiver as self, see run:. Signal a BoTalkError when aString does not compile. The variables assigned by aString are created in the environment, unless aString does not compile"
 
 	| source created |
-	source := self intendedSource: aString.
+	source := addsReceivers
+		          ifTrue: [ self intendedSource: aString ]
+		          ifFalse: [ aString ].
 	created := (self assignedNamesIn: source) reject: [ :each | environment hasBindingOf: each ].
 	created do: [ :each | environment declare: each ].
-	^ [ OpalCompiler new
-		source: source;
-		receiver: receiver;
-		bindings: environment bindings values;
-		compile ]
-		on: OCCodeError
-		do: [ :error |
-			created do: [ :each | environment undeclare: each ].
-			BoTalkError new signal: error messageText ]
+	^ [
+		  OpalCompiler new
+			  source: source;
+			  receiver: receiver;
+			  bindings: environment bindings values;
+			  compile ]
+		  on: OCCodeError
+		  do: [ :error |
+				  created do: [ :each | environment undeclare: each ].
+				  BoTalkError new signal: error messageText ]
 ]
 
 { #category : 'private' }
@@ -149,9 +166,10 @@ BoTalkCompiler >> run: aCompiledMethod [
 
 { #category : 'initialization' }
 BoTalkCompiler >> setReceiver: anObject environment: aTalkEnvironment [
-	receiver := anObject.
-	environment := aTalkEnvironment
 
+	receiver := anObject.
+	environment := aTalkEnvironment.
+	addsReceivers := true
 ]
 
 { #category : 'private' }

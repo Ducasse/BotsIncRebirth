@@ -64,10 +64,11 @@ BoTurtleWorld >> addLine: aSegment [
 	trails addChild: aSegment
 ]
 
-{ #category : 'adding' }
+{ #category : 'turtles' }
 BoTurtleWorld >> addTurtle: aTurtle [
-	"Add aTurtle at the center of the receiver"
+	"Add aTurtle at the center of the receiver, unless it is already there"
 
+	(turtles includes: aTurtle) ifTrue: [ ^ aTurtle ].
 	turtles add: aTurtle.
 	aTurtle world: self.
 	self addChild: aTurtle.

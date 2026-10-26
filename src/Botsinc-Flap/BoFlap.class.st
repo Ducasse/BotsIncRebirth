@@ -133,6 +133,13 @@ BoFlap >> currentPosition [
 		ifFalse: [ edge closedPositionOf: self in: self parent extent ]
 ]
 
+{ #category : 'initialization' }
+BoFlap >> defaultElevation [
+	"A flap passes over the windows of the world, even the window brought to the front by Toplo (see ToBasicWindowElement>>defaultElevation, SmallInteger maxVal - 1000), but stays below the menus and tooltips of Toplo"
+
+	^ BlRelativeElevation elevation: SmallInteger maxVal - 950
+]
+
 { #category : 'accessing' }
 BoFlap >> edge [
 	^ edge
@@ -146,6 +153,7 @@ BoFlap >> edge: aFlapEdge [
 
 { #category : 'initialization' }
 BoFlap >> initialize [
+
 	super initialize.
 	edge := BoFlapEdge left.
 	open := false.
@@ -156,9 +164,9 @@ BoFlap >> initialize [
 	pane := self newPane.
 	tab := self newTab.
 	self constraintsDo: [ :c |
-		c horizontal fitContent.
-		c vertical fitContent ].
-	self elevation: (BlRelativeElevation elevation: 1000).
+			c horizontal fitContent.
+			c vertical fitContent ].
+	self elevation: self defaultElevation.
 	self rebuild
 ]
 

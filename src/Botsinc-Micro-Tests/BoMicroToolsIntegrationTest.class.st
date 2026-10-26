@@ -190,6 +190,21 @@ BoMicroToolsIntegrationTest >> testFlapIsOpenAndShowsTheProtocols [
 ]
 
 { #category : 'tests' }
+BoMicroToolsIntegrationTest >> testOpenedFlapPassesOverAWindowOfTheWorld [
+	"Toplo brings the window to the front when it is used; a flap opened after must still be above it"
+
+	| point |
+	browser window topBarElement eventSimulator dragBy: -400 @ 200.
+	self settle.
+	browser window eventSimulator click.
+	self settle.
+	self showPlaygroundFlap.
+	point := (browser window bounds inSpace asRectangle intersect: playgroundFlap pane bounds inSpace asRectangle) center.
+	self assert: playgroundFlap elevation elevation > browser window elevation elevation.
+	self assert: ((space root findMouseEventTargetAt: point) allParentsInclude: playgroundFlap)
+]
+
+{ #category : 'tests' }
 BoMicroToolsIntegrationTest >> testPulledOutPlaygroundLeavesTheOtherOnItsHalf [
 
 	| other paneBounds |
@@ -220,10 +235,11 @@ BoMicroToolsIntegrationTest >> testPulledOutPlaygroundRunsScriptsOnTheWorld [
 
 { #category : 'tests' }
 BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutBrowser [
+	"The first drag moves the window out of the open flap, that passes over it"
 
 	| titleBar before after |
 	titleBar := browser window topBarElement.
-	titleBar eventSimulator dragBy: -200 @ 50.
+	titleBar eventSimulator dragBy: -400 @ 50.
 	self settle.
 	before := browser window bounds inSpace asRectangle origin.
 	titleBar eventSimulator dragBy: 30 @ 40.

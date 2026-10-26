@@ -7,8 +7,8 @@ Class {
 	#instVars : [
 		'turtle'
 	],
-	#category : 'Botsinc-EPS-Tests',
-	#package : 'Botsinc-EPS-Tests'
+	#category : 'Botsinc-Recording-Tests',
+	#package : 'Botsinc-Recording-Tests'
 }
 
 { #category : 'helpers' }
@@ -58,7 +58,7 @@ BoEPSTurtleTest >> setUp [
 { #category : 'tests' }
 BoEPSTurtleTest >> testCrossBoundingBox [
 	self drawCross.
-	self assert: (self boundingBoxOf: turtle encapsulatedPostscript) equals: '240 360 360 480'
+	self assert: (self boundingBoxOf: turtle document) equals: '240 360 360 480'
 
 ]
 
@@ -66,7 +66,7 @@ BoEPSTurtleTest >> testCrossBoundingBox [
 BoEPSTurtleTest >> testCrossPath [
 	self drawCross.
 	self
-		assert: (self pathOperatorsOf: turtle encapsulatedPostscript)
+		assert: (self pathOperatorsOf: turtle document)
 		equals: #( '300 420 moveto'
 			'350 420 lineto' '300 420 moveto'
 			'300 470 lineto' '300 420 moveto'
@@ -80,16 +80,57 @@ BoEPSTurtleTest >> testDocumentCanBeAskedTwice [
 	"Asking for the document does not end the drawing"
 
 	turtle go: 100.
-	self assert: turtle encapsulatedPostscript equals: turtle encapsulatedPostscript.
+	self assert: turtle document equals: turtle document.
 	turtle turnLeft: 90; go: 100.
-	self assert: (self boundingBoxOf: turtle encapsulatedPostscript) equals: '290 410 410 530'
+	self assert: (self boundingBoxOf: turtle document) equals: '290 410 410 530'
+
+]
+
+{ #category : 'tests' }
+BoEPSTurtleTest >> testDocumentFor [
+	self drawSquare.
+	self
+		assert: (BoEPSTurtle documentFor: [ :pica | 4 timesRepeat: [ pica go: 100; turnLeft: 90 ] ])
+		equals: turtle document
+]
+
+{ #category : 'tests' }
+BoEPSTurtleTest >> testDocumentForBookScript [
+	"The scripts of the book create turtles with Bot new: they draw into EPS as they are"
+
+	self drawSquare.
+	self
+		assert: (BoEPSTurtle documentForScript: '| pica | pica := Bot new. 4 timesRepeat: [ pica go: 100; turnLeft: 90 ]')
+		equals: turtle document
+
+]
+
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testDocumentForMethod [
+	self drawSquare.
+	self assert: (BoEPSTurtle documentForMethod: BoEPSScriptsForTest >> #square) equals: turtle document
+
+]
+
+{ #category : 'tests' }
+BoEPSTurtleTest >> testDocumentForScriptWithTwoTurtles [
+	| eps |
+	eps := BoEPSTurtle documentForScript: '| marge daly | marge := Bot new. daly := BoTurtle new. marge go: 100. daly north; go: 50'.
+	self assert: (self boundingBoxOf: eps) equals: '290 410 410 480'.
+	self assert: (self pathOperatorsOf: eps) equals: #( '300 420 moveto' '400 420 lineto' '300 420 moveto' '300 470 lineto' )
+
+]
+
+{ #category : 'tests' }
+BoEPSTurtleTest >> testDocumentForScriptWithoutTurtle [
+	self should: [ BoEPSTurtle documentForScript: '3 + 4' ] raise: Error
 
 ]
 
 { #category : 'tests' }
 BoEPSTurtleTest >> testDocumentStructure [
 	| lines |
-	lines := turtle encapsulatedPostscript lines.
+	lines := turtle document lines.
 	self assert: lines first equals: '%!PS-Adobe-3.0 EPSF-3.0'.
 	self assert: (lines second beginsWith: '%%BoundingBox: ').
 	self assert: (lines includes: '%%EndComments').
@@ -98,56 +139,15 @@ BoEPSTurtleTest >> testDocumentStructure [
 ]
 
 { #category : 'tests' }
-BoEPSTurtleTest >> testEpsFor [
-	self drawSquare.
-	self
-		assert: (BoEPSTurtle epsFor: [ :pica | 4 timesRepeat: [ pica go: 100; turnLeft: 90 ] ])
-		equals: turtle encapsulatedPostscript
-]
-
-{ #category : 'tests' }
-BoEPSTurtleTest >> testEpsForBookScript [
-	"The scripts of the book create turtles with Bot new: they draw into EPS as they are"
-
-	self drawSquare.
-	self
-		assert: (BoEPSTurtle epsForScript: '| pica | pica := Bot new. 4 timesRepeat: [ pica go: 100; turnLeft: 90 ]')
-		equals: turtle encapsulatedPostscript
-
-]
-
-{ #category : 'tests - chapters' }
-BoEPSTurtleTest >> testEpsForMethod [
-	self drawSquare.
-	self assert: (BoEPSTurtle epsForMethod: BoEPSScriptsForTest >> #square) equals: turtle encapsulatedPostscript
-
-]
-
-{ #category : 'tests' }
-BoEPSTurtleTest >> testEpsForScriptWithTwoTurtles [
-	| eps |
-	eps := BoEPSTurtle epsForScript: '| marge daly | marge := Bot new. daly := BoTurtle new. marge go: 100. daly north; go: 50'.
-	self assert: (self boundingBoxOf: eps) equals: '290 410 410 480'.
-	self assert: (self pathOperatorsOf: eps) equals: #( '300 420 moveto' '400 420 lineto' '300 420 moveto' '300 470 lineto' )
-
-]
-
-{ #category : 'tests' }
-BoEPSTurtleTest >> testEpsForScriptWithoutTurtle [
-	self should: [ BoEPSTurtle epsForScript: '3 + 4' ] raise: Error
-
-]
-
-{ #category : 'tests' }
 BoEPSTurtleTest >> testJumpDoesNotDraw [
 	turtle jump: 100.
-	self assert: (self pathOperatorsOf: turtle encapsulatedPostscript) equals: #( '300 420 moveto' '400 420 moveto' )
+	self assert: (self pathOperatorsOf: turtle document) equals: #( '300 420 moveto' '400 420 moveto' )
 
 ]
 
 { #category : 'tests' }
 BoEPSTurtleTest >> testNothingDrawnHasAMarginAroundTheStart [
-	self assert: (self boundingBoxOf: turtle encapsulatedPostscript) equals: '290 410 310 430'
+	self assert: (self boundingBoxOf: turtle document) equals: '290 410 310 430'
 
 ]
 
@@ -155,7 +155,7 @@ BoEPSTurtleTest >> testNothingDrawnHasAMarginAroundTheStart [
 BoEPSTurtleTest >> testPenColor [
 	turtle penColor: Color red.
 	turtle go: 10.
-	self assert: ((self bodyOf: turtle encapsulatedPostscript) includes: '1.000 0.000 0.000 setrgbcolor')
+	self assert: ((self bodyOf: turtle document) includes: '1.000 0.000 0.000 setrgbcolor')
 
 ]
 
@@ -167,7 +167,7 @@ BoEPSTurtleTest >> testPenSizeStartsANewPath [
 	turtle penSize: 3.
 	turtle go: 10.
 	self
-		assert: (self bodyOf: turtle encapsulatedPostscript)
+		assert: (self bodyOf: turtle document)
 		equals: #( '1 setlinewidth' '0.000 0.000 0.000 setrgbcolor' 'newpath' '300 420 moveto' '310 420 lineto' 'stroke'
 			'3 setlinewidth' '0.000 0.000 0.000 setrgbcolor' 'newpath' '310 420 moveto' '320 420 lineto' 'stroke' )
 
@@ -187,7 +187,7 @@ BoEPSTurtleTest >> testScriptSourceOfMethodDropsTheSelector [
 BoEPSTurtleTest >> testScriptsDoNotChangeTheirClasses [
 	"Bot is only bound while the script runs"
 
-	BoEPSTurtle epsForScript: '| pica | pica := BoTurtle new. pica go: 10'.
+	BoEPSTurtle documentForScript: '| pica | pica := BoTurtle new. pica go: 10'.
 	self assert: BoTurtle new class equals: BoTurtle
 
 ]
@@ -205,7 +205,7 @@ BoEPSTurtleTest >> testSquareBoundingBox [
 	self drawSquare.
 	self assert: turtle minPoint equals: 300 @ 420.
 	self assert: turtle maxPoint equals: 400 @ 520.
-	self assert: (self boundingBoxOf: turtle encapsulatedPostscript) equals: '290 410 410 530'
+	self assert: (self boundingBoxOf: turtle document) equals: '290 410 410 530'
 
 ]
 
@@ -213,7 +213,7 @@ BoEPSTurtleTest >> testSquareBoundingBox [
 BoEPSTurtleTest >> testSquarePath [
 	self drawSquare.
 	self
-		assert: (self pathOperatorsOf: turtle encapsulatedPostscript)
+		assert: (self pathOperatorsOf: turtle document)
 		equals: #( '300 420 moveto' '400 420 lineto' '400 520 lineto' '300 520 lineto' '300 420 lineto' )
 
 ]
@@ -221,7 +221,7 @@ BoEPSTurtleTest >> testSquarePath [
 { #category : 'tests' }
 BoEPSTurtleTest >> testStartsAtThePageCenter [
 	self assert: turtle lastPoint equals: 300 @ 420.
-	self assert: (self pathOperatorsOf: turtle encapsulatedPostscript) equals: #( '300 420 moveto' )
+	self assert: (self pathOperatorsOf: turtle document) equals: #( '300 420 moveto' )
 
 ]
 
@@ -231,7 +231,7 @@ BoEPSTurtleTest >> testWriteScriptToFile [
 	file := FileSystem memory / 'square.eps'.
 	BoEPSTurtle writeScript: '| pica | pica := Bot new. 4 timesRepeat: [ pica go: 100; turnLeft: 90 ]' to: file.
 	self drawSquare.
-	self assert: file contents equals: turtle encapsulatedPostscript
+	self assert: file contents equals: turtle document
 
 ]
 
@@ -249,7 +249,7 @@ BoEPSTurtleTest >> testWriteScriptsOfProtocol [
 	self assert: (files collect: [ :each | each basename ]) equals: #( 'cross.eps' 'square.eps' ).
 	self assert: (directory children collect: [ :each | each basename ]) asSet equals: #( 'cross.eps' 'square.eps' ) asSet.
 	self drawSquare.
-	self assert: (directory / 'square.eps') contents equals: turtle encapsulatedPostscript
+	self assert: (directory / 'square.eps') contents equals: turtle document
 
 ]
 
@@ -271,7 +271,7 @@ BoEPSTurtleTest >> testWriteTo [
 	file := FileSystem memory / 'cross.eps'.
 	self drawCross.
 	turtle writeTo: file.
-	self assert: file contents equals: turtle encapsulatedPostscript
+	self assert: file contents equals: turtle document
 
 ]
 

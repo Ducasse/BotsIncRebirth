@@ -4,8 +4,8 @@ I hold turtle scripts as methods grouped in protocols, the way the scripts of a 
 Class {
 	#name : 'BoEPSScriptsForTest',
 	#superclass : 'Object',
-	#category : 'Botsinc-EPS-Tests',
-	#package : 'Botsinc-EPS-Tests'
+	#category : 'Botsinc-Recording-Tests',
+	#package : 'Botsinc-Recording-Tests'
 }
 
 { #category : 'ChShapes' }

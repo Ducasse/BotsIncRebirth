@@ -1,7 +1,7 @@
 "
 I am a small browser to write the methods of one class, the Bloc version of the MicroBrowser of Bots Inc. I am shown in a window inside a turtle world, placed in a flap or anywhere in the world (see BoMicroTool and BoTurtleWorld class>>openWithTools).
 
-I show the categories (protocols) of the class and the methods of the selected category. The categories that exist when I am created are protected: their methods can be read but not changed nor removed, and a new method cannot replace one of their methods. One adds a category for one's own methods, writes a method and accepts it (Cmd+S).
+I show the protocols (protocols) of the class and the methods of the selected protocol. The protocols that exist when I am created are protected: their methods can be read but not changed nor removed, and a new method cannot replace one of their methods. One adds a protocol for one's own methods, writes a method and accepts it (Cmd+S).
 
 The code pane is colored by a BoTalkStyler, as the talk bubbles.
 "
@@ -27,7 +27,7 @@ Class {
 
 { #category : 'instance creation' }
 BoMicroBrowser class >> on: aClass [
-	"The categories of aClass are protected"
+	"The protocols of aClass are protected"
 
 	^ self on: aClass protecting: aClass protocolNames
 ]
@@ -42,14 +42,14 @@ BoMicroBrowser class >> on: aClass protecting: aCollectionOfProtocolNames [
 
 { #category : 'actions' }
 BoMicroBrowser >> accept [
-	"Compile the text of the code pane in the selected category. Return the selector of the method, or nil when it is refused"
+	"Compile the text of the code pane in the selected protocol. Return the selector of the method, or nil when it is refused"
 
 	| source selector |
 	self selectedProtocol ifNil: [
-			self tell: 'Select a category, or add one, for your method'.
+			self tell: 'Select a protocol, or add one, for your method'.
 			^ nil ].
 	(self isProtected: self selectedProtocol) ifTrue: [
-			self tell: 'The methods of ' , self selectedProtocol , ' cannot be changed. Add a category for your methods'.
+			self tell: 'The methods of ' , self selectedProtocol , ' cannot be changed. Add a protocol for your methods'.
 			^ nil ].
 	source := codePane text.
 	selector := (OCParser parseFaultyMethod: source) selector.
@@ -70,7 +70,7 @@ BoMicroBrowser >> accept [
 
 { #category : 'actions' }
 BoMicroBrowser >> addProtocol [
-	"Add a category named as written in the category field"
+	"Add a protocol named as written in the protocol field"
 
 	self addProtocolNamed: protocolNameInput text.
 	protocolNameInput text: ''
@@ -81,7 +81,7 @@ BoMicroBrowser >> addProtocolNamed: aString [
 
 	| name |
 	name := aString trimBoth.
-	name ifEmpty: [ ^ self tell: 'Write the name of the new category first' ].
+	name ifEmpty: [ ^ self tell: 'Write the name of the new protocol first' ].
 	browsedClass addProtocol: name.
 	self updateProtocols.
 	self selectProtocol: name
@@ -152,20 +152,20 @@ BoMicroBrowser >> initializePresenters [
 	codePane whenTextEditedDo: [ codePane clearError ].
 	codePane addShortcut: BlKeyCombination primaryS named: 'Accept' do: [ self accept ].
 	protocolNameInput := self newTextInput
-		                     placeholder: 'New category';
+		                     placeholder: 'New protocol';
 		                     yourself.
 	addProtocolButton := self
-		                     newButtonLabeled: 'Add category'
-		                     help: 'Add a category, named as written on the left, for your methods'
+		                     newButtonLabeled: 'Add protocol'
+		                     help: 'Add a protocol, named as written on the left, for your methods'
 		                     action: [ self addProtocol ].
 	removeProtocolButton := self
-		                        newButtonLabeled: 'Remove category'
-		                        help: 'Remove the selected category and its methods'
+		                        newButtonLabeled: 'Remove protocol'
+		                        help: 'Remove the selected protocol and its methods'
 		                        action: [ self removeProtocol ].
 	removeMethodButton := self newButtonLabeled: 'Remove method' help: 'Remove the selected method' action: [ self removeMethod ].
 	acceptButton := self
 		                newButtonLabeled: 'Accept'
-		                help: 'Compile the method in the selected category (Cmd+S)'
+		                help: 'Compile the method in the selected protocol (Cmd+S)'
 		                action: [ self accept ].
 	messageLabel := self newLabel
 ]
@@ -178,7 +178,7 @@ BoMicroBrowser >> isProtected: aProtocolName [
 
 { #category : 'testing' }
 BoMicroBrowser >> isProtectedSelector: aSelector [
-	"A method of a protected category cannot be replaced"
+	"A method of a protected protocol cannot be replaced"
 
 	^ (browsedClass includesSelector: aSelector) and: [ self isProtected: (browsedClass >> aSelector) protocolName ]
 ]
@@ -272,7 +272,7 @@ BoMicroBrowser >> selectedSelector [
 
 { #category : 'accessing' }
 BoMicroBrowser >> selectors [
-	"Return the selectors of the methods of the selected category"
+	"Return the selectors of the methods of the selected protocol"
 
 	^ self selectedProtocol ifNil: [ #(  ) ] ifNotNil: [ :aProtocol | (browsedClass selectorsInProtocol: aProtocol) sorted ]
 ]

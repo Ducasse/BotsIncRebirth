@@ -1,5 +1,5 @@
 "
-I test the micro browser on an anonymous class whose category drawing is protected, so that the classes of the system are not changed.
+I test the micro browser on an anonymous class whose protocol drawing is protected, so that the classes of the system are not changed.
 
 Most tests do not show the browser. The tests that click show the window of the browser in a space (see showBrowser), which is closed in tearDown.
 "
@@ -90,7 +90,7 @@ BoMicroBrowserTest >> testAcceptCannotReplaceAProtectedMethod [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testAcceptCompilesInTheSelectedCategory [
+BoMicroBrowserTest >> testAcceptCompilesInTheSelectedProtocol [
 
 	browser addProtocolNamed: 'mine'.
 	browser codePane text: 'circle
@@ -101,7 +101,7 @@ BoMicroBrowserTest >> testAcceptCompilesInTheSelectedCategory [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testAcceptIsRefusedInAProtectedCategory [
+BoMicroBrowserTest >> testAcceptIsRefusedInAProtectedProtocol [
 
 	browser selectProtocol: 'drawing'.
 	browser codePane text: 'circle
@@ -111,7 +111,7 @@ BoMicroBrowserTest >> testAcceptIsRefusedInAProtectedCategory [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testAcceptNeedsACategory [
+BoMicroBrowserTest >> testAcceptNeedsAProtocol [
 
 	browser codePane text: 'circle
 	^ 3'.
@@ -120,7 +120,7 @@ BoMicroBrowserTest >> testAcceptNeedsACategory [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testAddCategoryUsesTheCategoryField [
+BoMicroBrowserTest >> testAddProtocolUsesTheProtocolField [
 
 	browser protocolNameInput text: 'mine'.
 	browser addProtocol.
@@ -129,7 +129,7 @@ BoMicroBrowserTest >> testAddCategoryUsesTheCategoryField [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testAddedCategoryIsSelectedAndNotProtected [
+BoMicroBrowserTest >> testAddedProtocolIsSelectedAndNotProtected [
 
 	browser addProtocolNamed: ' mine '.
 	self assert: browser selectedProtocol equals: #mine.
@@ -156,15 +156,8 @@ BoMicroBrowserTest >> testBuiltListsFollowTheChanges [
 	self assert: protocolWidget dataAccessor asArray equals: #( #drawing )
 ]
 
-{ #category : 'tests' }
-BoMicroBrowserTest >> testCategoriesAreListed [
-
-	self assert: browser protocols equals: #( #drawing ).
-	self assert: (browser isProtected: 'drawing')
-]
-
 { #category : 'tests - shown' }
-BoMicroBrowserTest >> testClickOnAnotherCategoryReplacesTheMethods [
+BoMicroBrowserTest >> testClickOnAnotherProtocolReplacesTheMethods [
 
 	browsedClass
 		compile: 'circle
@@ -179,15 +172,6 @@ BoMicroBrowserTest >> testClickOnAnotherCategoryReplacesTheMethods [
 ]
 
 { #category : 'tests - shown' }
-BoMicroBrowserTest >> testClickOnCategoryShowsItsMethods [
-
-	self showBrowser.
-	self clickOn: 'drawing' in: (browser instVarNamed: #protocolList).
-	self assert: browser selectedProtocol equals: #drawing.
-	self assert: (self shownTextsOf: (browser instVarNamed: #methodList)) equals: #( 'square' )
-]
-
-{ #category : 'tests - shown' }
 BoMicroBrowserTest >> testClickOnMethodShowsItsSource [
 
 	self showBrowser.
@@ -195,6 +179,15 @@ BoMicroBrowserTest >> testClickOnMethodShowsItsSource [
 	self clickOn: 'square' in: (browser instVarNamed: #methodList).
 	self assert: browser selectedSelector equals: #square.
 	self assert: browser codePane text equals: (browsedClass >> #square) sourceCode
+]
+
+{ #category : 'tests - shown' }
+BoMicroBrowserTest >> testClickOnProtocolShowsItsMethods [
+
+	self showBrowser.
+	self clickOn: 'drawing' in: (browser instVarNamed: #protocolList).
+	self assert: browser selectedProtocol equals: #drawing.
+	self assert: (self shownTextsOf: (browser instVarNamed: #methodList)) equals: #( 'square' )
 ]
 
 { #category : 'tests' }
@@ -224,15 +217,6 @@ BoMicroBrowserTest >> testDropOfAnElementOnAListIsIgnored [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testProtectedCategoryCannotBeRemoved [
-
-	browser selectProtocol: 'drawing'.
-	browser removeProtocol.
-	self assert: (browser protocols includes: #drawing).
-	self assert: (browsedClass includesSelector: #square)
-]
-
-{ #category : 'tests' }
 BoMicroBrowserTest >> testProtectedMethodCannotBeRemoved [
 
 	browser selectProtocol: 'drawing'.
@@ -242,15 +226,19 @@ BoMicroBrowserTest >> testProtectedMethodCannotBeRemoved [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testRemoveOwnCategory [
+BoMicroBrowserTest >> testProtectedProtocolCannotBeRemoved [
 
-	browser addProtocolNamed: 'mine'.
-	browser codePane text: 'circle
-	^ 3'.
-	browser accept.
+	browser selectProtocol: 'drawing'.
 	browser removeProtocol.
-	self deny: (browser protocols includes: #mine).
-	self deny: (browsedClass includesSelector: #circle)
+	self assert: (browser protocols includes: #drawing).
+	self assert: (browsedClass includesSelector: #square)
+]
+
+{ #category : 'tests' }
+BoMicroBrowserTest >> testProtocolsAreListed [
+
+	self assert: browser protocols equals: #( #drawing ).
+	self assert: (browser isProtected: 'drawing')
 ]
 
 { #category : 'tests' }
@@ -266,14 +254,15 @@ BoMicroBrowserTest >> testRemoveOwnMethod [
 ]
 
 { #category : 'tests' }
-BoMicroBrowserTest >> testSelectingACategoryUpdatesTheBuiltMethodList [
-	"The lists are built with the Toplo backend, as when the browser is shown"
+BoMicroBrowserTest >> testRemoveOwnProtocol [
 
-	| methodWidget |
-	browser build.
-	browser selectProtocol: 'drawing'.
-	methodWidget := (browser instVarNamed: #methodList) adapter widget.
-	self assert: methodWidget dataAccessor asArray equals: #( #square )
+	browser addProtocolNamed: 'mine'.
+	browser codePane text: 'circle
+	^ 3'.
+	browser accept.
+	browser removeProtocol.
+	self deny: (browser protocols includes: #mine).
+	self deny: (browsedClass includesSelector: #circle)
 ]
 
 { #category : 'tests' }
@@ -285,8 +274,19 @@ BoMicroBrowserTest >> testSelectingAMethodShowsItsSource [
 	self assert: browser codePane text equals: (browsedClass >> #square) sourceCode
 ]
 
+{ #category : 'tests' }
+BoMicroBrowserTest >> testSelectingAProtocolUpdatesTheBuiltMethodList [
+	"The lists are built with the Toplo backend, as when the browser is shown"
+
+	| methodWidget |
+	browser build.
+	browser selectProtocol: 'drawing'.
+	methodWidget := (browser instVarNamed: #methodList) adapter widget.
+	self assert: methodWidget dataAccessor asArray equals: #( #square )
+]
+
 { #category : 'tests - shown' }
-BoMicroBrowserTest >> testShownBrowserListsTheCategories [
+BoMicroBrowserTest >> testShownBrowserListsTheProtocols [
 
 	self showBrowser.
 	self assert: (self shownTextsOf: (browser instVarNamed: #protocolList)) equals: #( 'drawing' )

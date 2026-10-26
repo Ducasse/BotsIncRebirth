@@ -105,20 +105,12 @@ BoMicroToolsIntegrationTest >> tearDown [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testClickOnAnotherCategoryReplacesTheMethods [
+BoMicroToolsIntegrationTest >> testClickOnAnotherProtocolReplacesTheMethods [
 
 	self clickOn: 'drawing' in: (browser instVarNamed: #protocolList).
 	self clickOn: 'shapes' in: (browser instVarNamed: #protocolList).
 	self assert: browser selectedProtocol equals: #shapes.
 	self assert: (self shownTextsOf: (browser instVarNamed: #methodList)) equals: #( 'circle' )
-]
-
-{ #category : 'tests' }
-BoMicroToolsIntegrationTest >> testClickOnCategoryShowsItsMethods [
-
-	self clickOn: 'drawing' in: (browser instVarNamed: #protocolList).
-	self assert: browser selectedProtocol equals: #drawing.
-	self assert: (self shownTextsOf: (browser instVarNamed: #methodList)) equals: #( 'square' )
 ]
 
 { #category : 'tests' }
@@ -128,6 +120,14 @@ BoMicroToolsIntegrationTest >> testClickOnMethodShowsItsSource [
 	self clickOn: 'square' in: (browser instVarNamed: #methodList).
 	self assert: browser selectedSelector equals: #square.
 	self assert: browser codePane text equals: (browsedClass >> #square) sourceCode
+]
+
+{ #category : 'tests' }
+BoMicroToolsIntegrationTest >> testClickOnProtocolShowsItsMethods [
+
+	self clickOn: 'drawing' in: (browser instVarNamed: #protocolList).
+	self assert: browser selectedProtocol equals: #drawing.
+	self assert: (self shownTextsOf: (browser instVarNamed: #methodList)) equals: #( 'square' )
 ]
 
 { #category : 'tests' }
@@ -182,7 +182,7 @@ BoMicroToolsIntegrationTest >> testDragTitleBarPullsTheWorkspaceOutOfTheFlap [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testFlapIsOpenAndShowsTheCategories [
+BoMicroToolsIntegrationTest >> testFlapIsOpenAndShowsTheProtocols [
 
 	self assert: flap isOpen.
 	self assert: flap pane bounds inSpace left < space extent x.

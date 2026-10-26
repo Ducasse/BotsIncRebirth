@@ -1,5 +1,5 @@
 "
-I load the Bots Inc packages: turtles, flaps and talk bubbles, written with Bloc and Toplo.
+I load the Bots Inc packages: turtles, flaps, talk bubbles and the EPS turtle, written with Bloc and Toplo.
 
 Toplo is pinned to the commit used to develop Bots Inc in Pharo 14 (head of its Pharo14 branch); it brings Bloc and Album.
 
@@ -38,8 +38,8 @@ BaselineOfBotsIncRebirth >> dependencies: spec [
 BaselineOfBotsIncRebirth >> groups: spec [
 
 	spec
-		group: 'Core' with: #( 'Botsinc-Turtle' 'Botsinc-Flap' 'Botsinc-Talk' );
-		group: 'Tests' with: #( 'Botsinc-Turtle-Tests' 'Botsinc-Flap-Tests' 'Botsinc-Talk-Tests' );
+		group: 'Core' with: #( 'Botsinc-Turtle' 'Botsinc-Flap' 'Botsinc-Talk' 'Botsinc-EPS' );
+		group: 'Tests' with: #( 'Botsinc-Turtle-Tests' 'Botsinc-Flap-Tests' 'Botsinc-Talk-Tests' 'Botsinc-EPS-Tests' );
 		group: 'default' with: #( 'Core' 'Tests' )
 ]
 
@@ -52,5 +52,7 @@ BaselineOfBotsIncRebirth >> packages: spec [
 		package: 'Botsinc-Flap' with: [ spec requires: #( 'Toplo' ) ];
 		package: 'Botsinc-Flap-Tests' with: [ spec requires: #( 'Botsinc-Flap' ) ];
 		package: 'Botsinc-Talk' with: [ spec requires: #( 'Botsinc-Turtle' ) ];
-		package: 'Botsinc-Talk-Tests' with: [ spec requires: #( 'Botsinc-Talk' ) ]
+		package: 'Botsinc-Talk-Tests' with: [ spec requires: #( 'Botsinc-Talk' ) ];
+		package: 'Botsinc-EPS' with: [ spec requires: #( 'Botsinc-Turtle' ) ];
+		package: 'Botsinc-EPS-Tests' with: [ spec requires: #( 'Botsinc-EPS' ) ]
 ]

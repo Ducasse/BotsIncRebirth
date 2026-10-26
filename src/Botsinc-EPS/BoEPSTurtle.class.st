@@ -17,6 +17,10 @@ From a script of the book, where turtles are created with Bot new (all the turtl
 		writeScript: '| pica | pica := Bot new. 4 timesRepeat: [ pica go: 100; turnLeft: 90 ]'
 		to: 'square.eps'
 
+As in 2002, the scripts of a chapter can be methods grouped in a protocol: one EPS file is written per script, named after its selector:
+
+	BoEPSTurtle writeScriptsOf: BoBookScripts inProtocol: 'ChLoop' to: 'figures'
+
 Or directly:
 
 	| pica |
@@ -74,6 +78,14 @@ BoEPSTurtle class >> epsFor: aBlock [
 	turtle := self new.
 	aBlock value: turtle.
 	^ turtle encapsulatedPostscript
+
+]
+
+{ #category : 'chapter generation' }
+BoEPSTurtle class >> epsForMethod: aCompiledMethod [
+	"Answer the EPS document of a script written as a method"
+
+	^ self epsForScript: (self scriptSourceOf: aCompiledMethod)
 
 ]
 
@@ -140,6 +152,23 @@ BoEPSTurtle class >> scriptClassNames [
 
 ]
 
+{ #category : 'chapter generation' }
+BoEPSTurtle class >> scriptSourceOf: aCompiledMethod [
+	"The body of a script method, with its temporaries but without its selector, as the 2002 version removed the first line of the method"
+
+	^ aCompiledMethod ast body sourceCode
+
+]
+
+{ #category : 'chapter generation' }
+BoEPSTurtle class >> scriptsOf: aClass inProtocol: aProtocolName [
+	"The script methods of a protocol, sorted by selector. Methods with arguments cannot be run alone and are not scripts"
+
+	^ ((aClass methodsInProtocol: aProtocolName) select: [ :each | each numArgs = 0 ])
+		asSortedCollection: [ :a :b | a selector <= b selector ]
+
+]
+
 { #category : 'postscript' }
 BoEPSTurtle class >> writeScript: aString to: aFileReference [
 	"Write the EPS document of a script into a file, as the figures of the book were produced.
@@ -148,6 +177,29 @@ BoEPSTurtle class >> writeScript: aString to: aFileReference [
 	aFileReference asFileReference
 		ensureDelete;
 		writeStreamDo: [ :aStream | aStream nextPutAll: (self epsForScript: aString) ]
+
+]
+
+{ #category : 'chapter generation' }
+BoEPSTurtle class >> writeScriptsOf: aClass inProtocol: aProtocolName to: aDirectory [
+	"Write one EPS file per script of a protocol, named after its selector, and answer the files.
+	In 2002 the scripts of each chapter were methods of Turtle grouped in a category (ChLoop, ChTurn, ...); categories are called protocols in Pharo.
+	self writeScriptsOf: BoBookScripts inProtocol: 'ChLoop' to: 'figures'"
+
+	^ self writeScriptsOf: aClass inProtocol: aProtocolName to: aDirectory prefix: ''
+
+]
+
+{ #category : 'chapter generation' }
+BoEPSTurtle class >> writeScriptsOf: aClass inProtocol: aProtocolName to: aDirectory prefix: aString [
+	"Same as writeScriptsOf:inProtocol:to: but the file names start with aString, for example the name of the chapter, to keep the figures of the chapters apart in one directory"
+
+	| directory |
+	directory := aDirectory asFileReference ensureCreateDirectory.
+	^ (self scriptsOf: aClass inProtocol: aProtocolName) asArray collect: [ :each | | file |
+		file := directory / (aString , each selector , '.eps').
+		self writeScript: (self scriptSourceOf: each) to: file.
+		file ]
 
 ]
 

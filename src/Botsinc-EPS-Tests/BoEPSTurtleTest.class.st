@@ -116,6 +116,13 @@ BoEPSTurtleTest >> testEpsForBookScript [
 
 ]
 
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testEpsForMethod [
+	self drawSquare.
+	self assert: (BoEPSTurtle epsForMethod: BoEPSScriptsForTest >> #square) equals: turtle encapsulatedPostscript
+
+]
+
 { #category : 'tests' }
 BoEPSTurtleTest >> testEpsForScriptWithTwoTurtles [
 	| eps |
@@ -166,12 +173,30 @@ BoEPSTurtleTest >> testPenSizeStartsANewPath [
 
 ]
 
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testScriptSourceOfMethodDropsTheSelector [
+	self
+		assert: (BoEPSTurtle scriptSourceOf: BoEPSScriptsForTest >> #line)
+		equals: ('| pica |
+	pica := BoTurtle new.
+	pica go: 100' copyReplaceAll: String lf with: String cr)
+
+]
+
 { #category : 'tests' }
 BoEPSTurtleTest >> testScriptsDoNotChangeTheirClasses [
 	"Bot is only bound while the script runs"
 
 	BoEPSTurtle epsForScript: '| pica | pica := BoTurtle new. pica go: 10'.
 	self assert: BoTurtle new class equals: BoTurtle
+
+]
+
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testScriptsOfProtocolSkipMethodsWithArguments [
+	self
+		assert: ((BoEPSTurtle scriptsOf: BoEPSScriptsForTest inProtocol: 'ChShapes') collect: [ :each | each selector ]) asArray
+		equals: #( #cross #square )
 
 ]
 
@@ -207,6 +232,36 @@ BoEPSTurtleTest >> testWriteScriptToFile [
 	BoEPSTurtle writeScript: '| pica | pica := Bot new. 4 timesRepeat: [ pica go: 100; turnLeft: 90 ]' to: file.
 	self drawSquare.
 	self assert: file contents equals: turtle encapsulatedPostscript
+
+]
+
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testWriteScriptsOfEmptyProtocol [
+	self assert: (BoEPSTurtle writeScriptsOf: BoEPSScriptsForTest inProtocol: 'Nothing' to: FileSystem memory / 'figures') isEmpty
+
+]
+
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testWriteScriptsOfProtocol [
+	| directory files |
+	directory := FileSystem memory / 'figures'.
+	files := BoEPSTurtle writeScriptsOf: BoEPSScriptsForTest inProtocol: 'ChShapes' to: directory.
+	self assert: (files collect: [ :each | each basename ]) equals: #( 'cross.eps' 'square.eps' ).
+	self assert: (directory children collect: [ :each | each basename ]) asSet equals: #( 'cross.eps' 'square.eps' ) asSet.
+	self drawSquare.
+	self assert: (directory / 'square.eps') contents equals: turtle encapsulatedPostscript
+
+]
+
+{ #category : 'tests - chapters' }
+BoEPSTurtleTest >> testWriteScriptsOfProtocolWithPrefix [
+	| directory |
+	directory := FileSystem memory / 'figures'.
+	BoEPSTurtle writeScriptsOf: BoEPSScriptsForTest inProtocol: 'ChShapes' to: directory prefix: 'ChShapes-'.
+	BoEPSTurtle writeScriptsOf: BoEPSScriptsForTest inProtocol: 'ChOther' to: directory prefix: 'ChOther-'.
+	self
+		assert: (directory children collect: [ :each | each basename ]) asSet
+		equals: #( 'ChShapes-cross.eps' 'ChShapes-square.eps' 'ChOther-line.eps' ) asSet
 
 ]
 

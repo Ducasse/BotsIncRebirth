@@ -131,6 +131,14 @@ BoMicroToolsIntegrationTest >> testClickOnMethodShowsItsSource [
 ]
 
 { #category : 'tests' }
+BoMicroToolsIntegrationTest >> testDockedBrowserFillsTheFlap [
+
+	| paneBounds |
+	paneBounds := flap pane bounds inSpace asRectangle insetBy: flap pane padding asMargin.
+	self assert: browser window bounds inSpace asRectangle equals: paneBounds
+]
+
+{ #category : 'tests' }
 BoMicroToolsIntegrationTest >> testDragTitleBarPullsTheBrowserOutOfTheFlap [
 
 	| titleBar before after |
@@ -183,6 +191,21 @@ BoMicroToolsIntegrationTest >> testPulledOutWorkspaceRunsScriptsOnTheWorld [
 ]
 
 { #category : 'tests' }
+BoMicroToolsIntegrationTest >> testPullingOutAWorkspaceGivesTheWholeFlapToTheOther [
+
+	| other paneBounds |
+	other := BoMicroWorkspace on: world.
+	other dockIn: workspaceFlap.
+	self showWorkspaceFlap.
+	other window topBarElement eventSimulator dragBy: -100 @ -200.
+	self settle.
+	self deny: other isInFlap.
+	self assert: other isResizable.
+	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
+	self assert: workspace window bounds inSpace asRectangle equals: paneBounds
+]
+
+{ #category : 'tests' }
 BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutBrowser [
 
 	| titleBar before after |
@@ -211,4 +234,21 @@ BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutWorkspace [
 	after := workspace window bounds inSpace asRectangle origin.
 	self assert: workspace window parent identicalTo: world.
 	self assert: (after - before - (30 @ 40)) r < 2
+]
+
+{ #category : 'tests' }
+BoMicroToolsIntegrationTest >> testTwoWorkspacesShareTheFlapSideBySide [
+
+	| other paneBounds left right |
+	other := BoMicroWorkspace on: world.
+	other dockIn: workspaceFlap.
+	self showWorkspaceFlap.
+	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
+	left := workspace window bounds inSpace asRectangle.
+	right := other window bounds inSpace asRectangle.
+	self assert: left height equals: paneBounds height.
+	self assert: right height equals: paneBounds height.
+	self assert: left width equals: paneBounds width / 2.
+	self assert: left right equals: right left.
+	self assert: right right equals: paneBounds right
 ]

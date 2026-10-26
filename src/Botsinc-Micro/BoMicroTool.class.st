@@ -13,6 +13,15 @@ Class {
 }
 
 { #category : 'window' }
+BoMicroTool >> beResizable: aBoolean [
+	"Enable or disable the resize handles and the maximize button of the window. The title bar, that moves the window, stays enabled"
+
+	self window children do: [ :each |
+		((each isKindOf: ToHandle) and: [ each ~~ self window topBarElement ]) ifTrue: [ each enabled: aBoolean ] ].
+	self window expandButton ifNotNil: [ :aButton | aButton enabled: aBoolean ]
+]
+
+{ #category : 'window' }
 BoMicroTool >> defaultExtent [
 
 	^ 560 @ 320
@@ -20,10 +29,11 @@ BoMicroTool >> defaultExtent [
 
 { #category : 'window' }
 BoMicroTool >> dockIn: aFlap [
-	"Place the window of the receiver in aFlap, filling its pane. Return the window"
+	"Place the window of the receiver in aFlap, next to the tools already there. The window fills its part of the flap, so it cannot be resized nor maximized. Return the window"
 
 	self window removeFromParent.
-	aFlap content: self window.
+	self beResizable: false.
+	aFlap addContent: self window.
 	^ self window
 ]
 
@@ -51,6 +61,13 @@ BoMicroTool >> initializeWindow: aWindowPresenter [
 BoMicroTool >> isInFlap [
 
 	^ self flap notNil
+]
+
+{ #category : 'testing' }
+BoMicroTool >> isResizable [
+
+	^ self window children anySatisfy: [ :each |
+		  (each isKindOf: ToHandle) and: [ each ~~ self window topBarElement and: [ each isEnabled ] ] ]
 ]
 
 { #category : 'initialization' }
@@ -81,11 +98,13 @@ BoMicroTool >> newWindow [
 
 { #category : 'window' }
 BoMicroTool >> openIn: aWorld at: aPoint [
-	"Place the window of the receiver in aWorld, its top left corner at aPoint. Return the window"
+	"Place the window of the receiver in aWorld, its top left corner at aPoint. The window floats over the world, as inner windows do. Return the window"
 
 	self window
 		removeFromParent;
-		extent: self defaultExtent.
+		extent: self defaultExtent;
+		constraintsDo: [ :c | c ignoreByLayout ].
+	self beResizable: true.
 	aWorld addChild: self window.
 	self window position: aPoint.
 	^ self window

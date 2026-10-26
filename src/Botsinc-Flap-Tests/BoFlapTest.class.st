@@ -9,6 +9,22 @@ Class {
 }
 
 { #category : 'tests' }
+BoFlapTest >> testAddContentKeepsTheOtherContents [
+
+	| flap first second |
+	flap := BoFlap new.
+	first := BlElement new.
+	second := BlElement new.
+	flap content: first.
+	flap addContent: second.
+	self assert: flap contents equals: {
+			first.
+			second }.
+	self assert: second constraints horizontal resizer isMatchParent.
+	self assert: second constraints vertical resizer isMatchParent
+]
+
+{ #category : 'tests' }
 BoFlapTest >> testAddPrototypeCreatesItem [
 	| flap |
 	flap := BoFlap new.

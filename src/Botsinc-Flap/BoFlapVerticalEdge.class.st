@@ -13,6 +13,12 @@ BoFlapVerticalEdge >> availableThicknessOf: aFlap in: aWorldExtent [
 	^ aWorldExtent x - aFlap tabThickness
 ]
 
+{ #category : 'geometry' }
+BoFlapVerticalEdge >> contentLayout [
+
+	^ BlLinearLayout vertical
+]
+
 { #category : 'layout' }
 BoFlapVerticalEdge >> layout [
 	^ BlLinearLayout horizontal alignCenter

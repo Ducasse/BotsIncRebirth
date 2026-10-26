@@ -209,6 +209,20 @@ BoMicroBrowserTest >> testCompilationErrorIsShown [
 	self deny: (browsedClass includesSelector: #circle)
 ]
 
+{ #category : 'tests - shown' }
+BoMicroBrowserTest >> testDropOfAnElementOnAListIsIgnored [
+	"Moving a window over the browser drops its title bar on a list, which is not a drag of Spec"
+
+	| list drop |
+	self showBrowser.
+	list := (browser instVarNamed: #protocolList) adapter widget.
+	drop := BlDropEvent new
+		        gestureSource: BlElement new;
+		        yourself.
+	self shouldnt: [ BlEvent fireEvent: drop target: list ] raise: Error.
+	self assert: browser selectedProtocol isNil
+]
+
 { #category : 'tests' }
 BoMicroBrowserTest >> testProtectedCategoryCannotBeRemoved [
 

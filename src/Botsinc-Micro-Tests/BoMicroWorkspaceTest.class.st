@@ -103,6 +103,20 @@ caro go: 100.'.
 ]
 
 { #category : 'tests' }
+BoMicroWorkspaceTest >> testDockedWindowCannotBeResized [
+
+	| flap |
+	flap := BoFlap new.
+	workspace dockIn: flap.
+	self deny: workspace isResizable.
+	self deny: workspace window expandButton isEnabled.
+	self assert: workspace window topBarElement isEnabled.
+	workspace openIn: world at: 10 @ 20.
+	self assert: workspace isResizable.
+	self assert: workspace window expandButton isEnabled
+]
+
+{ #category : 'tests' }
 BoMicroWorkspaceTest >> testErrorWhileRunningIsShown [
 
 	workspace codePane text: '1 / 0'.
@@ -176,6 +190,21 @@ BoMicroWorkspaceTest >> testTurtlesCreatedOutsideAScriptAreInNoWorld [
 	self assert: BoCurrentWorld value isNil.
 	self deny: BoTurtle new hasParent.
 	self assert: world turtles size equals: 1
+]
+
+{ #category : 'tests' }
+BoMicroWorkspaceTest >> testTwoWorkspacesCanBeDockedInTheSameFlap [
+
+	| flap other |
+	flap := BoFlap new.
+	other := BoMicroWorkspace on: world.
+	workspace dockIn: flap.
+	other dockIn: flap.
+	self assert: flap contents equals: {
+			workspace window.
+			other window }.
+	self assert: workspace flap identicalTo: flap.
+	self assert: other flap identicalTo: flap
 ]
 
 { #category : 'tests' }

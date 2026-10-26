@@ -50,6 +50,13 @@ BoFlapEdge >> closedPositionOf: aFlap in: aWorldExtent [
 	^ self subclassResponsibility
 ]
 
+{ #category : 'geometry' }
+BoFlapEdge >> contentLayout [
+	"Return the layout of the tools held by a flap stuck to the receiver: they are placed along the edge"
+
+	^ self subclassResponsibility
+]
+
 { #category : 'resizing' }
 BoFlapEdge >> growthFor: aDelta [
 	"Return how much the pane grows when the pointer moves by aDelta"

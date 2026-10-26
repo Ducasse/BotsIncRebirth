@@ -1,6 +1,8 @@
 "
 I am a flap, in the spirit of Squeak Supplies flaps: a drawer stuck to one edge of a world element, holding prototypes of graphical objects. I span the whole side of the world I am attached to, and follow it when it is resized.
 
+Instead of prototypes, I can hold tools such as micro workspaces (see addContent:). They are placed along my edge, side by side in a top or bottom flap and stacked in a left or right flap, and share my pane equally, each filling its part.
+
 Clicking my tab slides me open or closed. Dragging one of my items drops a fresh copy into the world. Since Bloc elements cannot be copied, I store prototypes as blocks that create a new element each time.
 
 The world must have a real size (a fresh BlElement is only 50@50 and clips its children), so make it fill the space:
@@ -60,6 +62,18 @@ BoFlap class >> example [
 ]
 
 { #category : 'adding' }
+BoFlap >> addContent: anElement [
+	"Add anElement, a tool such as a workspace, to the pane. The tools are placed along my edge and share the pane equally, each filling its part, even a tool that floats over its parent elsewhere, such as an inner window"
+
+	pane layout: edge contentLayout.
+	anElement constraintsDo: [ :c |
+			c accountByLayout.
+			c horizontal matchParent.
+			c vertical matchParent ].
+	pane addChild: anElement
+]
+
+{ #category : 'adding' }
 BoFlap >> addPrototype: aBlock [
 	"aBlock returns a new element each time it is evaluated"
 
@@ -89,16 +103,17 @@ BoFlap >> close [
 
 { #category : 'adding' }
 BoFlap >> content: anElement [
-	"Fill the pane with anElement, a tool such as a workspace, instead of prototypes. The clicks in the pane do not reach the world, so that they do not open talk bubbles"
+	"Fill the pane with anElement, a tool such as a workspace, instead of prototypes or other tools"
 
-	pane
-		removeChildren;
-		layout: BlFrameLayout new;
-		addEventHandlerOn: BlClickEvent do: [ :anEvent | anEvent consumed: true ].
-	anElement constraintsDo: [ :c |
-			c horizontal matchParent.
-			c vertical matchParent ].
-	pane addChild: anElement
+	pane removeChildren.
+	self addContent: anElement
+]
+
+{ #category : 'accessing' }
+BoFlap >> contents [
+	"Return the tools that the pane holds, see addContent:"
+
+	^ pane children asArray
 ]
 
 { #category : 'private' }
@@ -177,13 +192,16 @@ BoFlap >> newItemFor: aPrototypeBlock [
 
 { #category : 'initialization' }
 BoFlap >> newPane [
+	"The clicks in the pane do not reach the world, so that they do not open talk bubbles"
+
 	^ BlElement new
-		layout: BlFlowLayout horizontal;
-		padding: (BlInsets all: 6);
-		background: (Color gray: 0.92);
-		border: (BlBorder paint: Color gray width: 1);
-		clipChildren: true;
-		yourself
+		  layout: BlFlowLayout horizontal;
+		  padding: (BlInsets all: 6);
+		  background: (Color gray: 0.92);
+		  border: (BlBorder paint: Color gray width: 1);
+		  clipChildren: true;
+		  addEventHandlerOn: BlClickEvent do: [ :anEvent | anEvent consumed: true ];
+		  yourself
 ]
 
 { #category : 'initialization' }

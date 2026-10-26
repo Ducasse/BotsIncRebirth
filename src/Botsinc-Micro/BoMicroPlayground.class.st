@@ -1,5 +1,5 @@
 "
-I am a small workspace to write scripts for the turtles of a world, the Bloc version of the MicroWorkspace of Bots Inc. I am shown in a window inside the world, placed in a flap or anywhere in the world (see BoMicroTool and BoTurtleWorld class>>openWithTools).
+I am a small playground to write scripts for the turtles of a world, the Bloc version of the MicroWorkspace of Bots Inc. I am shown in a window inside the world, placed in a flap or anywhere in the world (see BoMicroTool and BoTurtleWorld class>>openWithTools).
 
 My scripts are plain Smalltalk: unlike in the talk bubbles, no receiver is added to the messages. self is the world. The turtles created while a script runs go in the world (see BoCurrentWorld). The variables that a script assigns without declaring them are shared with the bubbles of the world; the declared ones are not.
 
@@ -10,7 +10,7 @@ My scripts are plain Smalltalk: unlike in the talk bubbles, no receiver is added
 Do it runs the selected text, or the whole script when nothing is selected (Cmd+D), Do it all runs the whole script. Both run in the UI process, so that any turtle can be used. Animate runs the whole script in its own process, so that the moves of animated turtles (BoAnimatedTurtle new) can be followed.
 "
 Class {
-	#name : 'BoMicroWorkspace',
+	#name : 'BoMicroPlayground',
 	#superclass : 'BoMicroTool',
 	#instVars : [
 		'world',
@@ -28,7 +28,7 @@ Class {
 }
 
 { #category : 'instance creation' }
-BoMicroWorkspace class >> on: aWorld [
+BoMicroPlayground class >> on: aWorld [
 
 	^ (self newApplication: BoMicroApplication new)
 		  setWorld: aWorld;
@@ -36,17 +36,17 @@ BoMicroWorkspace class >> on: aWorld [
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> animate [
+BoMicroPlayground >> animate [
 	"Run the whole script in its own process, so that the world is redrawn while animated turtles move. Return the process"
 
 	| source method |
 	source := codePane text.
 	method := (self compile: source) ifNil: [ ^ nil ].
-	^ [ self run: method source: source ] forkAt: Processor userBackgroundPriority named: 'BoMicroWorkspace script'
+	^ [ self run: method source: source ] forkAt: Processor userBackgroundPriority named: 'BoMicroPlayground script'
 ]
 
 { #category : 'cleaning' }
-BoMicroWorkspace >> clearAll [
+BoMicroPlayground >> clearAll [
 
 	self
 		clearTurtles;
@@ -54,25 +54,25 @@ BoMicroWorkspace >> clearAll [
 ]
 
 { #category : 'cleaning' }
-BoMicroWorkspace >> clearTrails [
+BoMicroPlayground >> clearTrails [
 
 	world clearTrails
 ]
 
 { #category : 'cleaning' }
-BoMicroWorkspace >> clearTurtles [
+BoMicroPlayground >> clearTurtles [
 
 	world removeTurtles
 ]
 
 { #category : 'accessing' }
-BoMicroWorkspace >> codePane [
+BoMicroPlayground >> codePane [
 
 	^ codePane
 ]
 
 { #category : 'private' }
-BoMicroWorkspace >> compile: aString [
+BoMicroPlayground >> compile: aString [
 	"Return a method running aString, or nil after showing why it does not compile"
 
 	aString trimBoth ifEmpty: [ ^ nil ].
@@ -84,8 +84,8 @@ BoMicroWorkspace >> compile: aString [
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> compiler [
-	"The scripts of the workspace are plain Smalltalk: unlike in the bubbles, the receiver of a message is never added"
+BoMicroPlayground >> compiler [
+	"The scripts of the playground are plain Smalltalk: unlike in the bubbles, the receiver of a message is never added"
 
 	^ (BoTalkCompiler receiver: world environment: world talkEnvironment)
 		  addsReceivers: false;
@@ -93,7 +93,7 @@ BoMicroWorkspace >> compiler [
 ]
 
 { #category : 'layout' }
-BoMicroWorkspace >> defaultLayout [
+BoMicroPlayground >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
 		  spacing: 4;
@@ -113,28 +113,28 @@ BoMicroWorkspace >> defaultLayout [
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> doIt [
-	"Run the selected text, or the whole script when nothing is selected, as the MicroWorkspace of Bots Inc did, and return its result"
+BoMicroPlayground >> doIt [
+	"Run the selected text, or the whole script when nothing is selected, as the MicroPlayground of Bots Inc did, and return its result"
 
 	^ self evaluate: codePane selectionOrText
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> doItAll [
+BoMicroPlayground >> doItAll [
 	"Run the whole script and return its result"
 
 	^ self evaluate: codePane text
 ]
 
 { #category : 'window' }
-BoMicroWorkspace >> dockedShare [
-	"A workspace takes half of the flap, so that two workspaces fit side by side"
+BoMicroPlayground >> dockedShare [
+	"A playground takes half of the flap, so that two playgrounds fit side by side"
 
 	^ 1 / 2
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> evaluate: aString [
+BoMicroPlayground >> evaluate: aString [
 	"Run aString with the world as receiver and show its result. Return the result, or nil when aString fails"
 
 	| method |
@@ -143,7 +143,7 @@ BoMicroWorkspace >> evaluate: aString [
 ]
 
 { #category : 'private' }
-BoMicroWorkspace >> inUIDo: aBlock [
+BoMicroPlayground >> inUIDo: aBlock [
 	"The scene graph must only be changed by the UI process"
 
 	(world isAttachedToSceneGraph and: [ world space isPulseProcessActive not ])
@@ -155,7 +155,7 @@ BoMicroWorkspace >> inUIDo: aBlock [
 ]
 
 { #category : 'initialization' }
-BoMicroWorkspace >> initializePresenters [
+BoMicroPlayground >> initializePresenters [
 
 	codePane := self instantiate: BoCodePane.
 	codePane whenTextEditedDo: [ codePane clearError ].
@@ -179,14 +179,14 @@ BoMicroWorkspace >> initializePresenters [
 ]
 
 { #category : 'accessing' }
-BoMicroWorkspace >> message [
+BoMicroPlayground >> message [
 	"Return the text shown under the script: the result of the last script, or why it failed"
 
 	^ messageLabel label
 ]
 
 { #category : 'running' }
-BoMicroWorkspace >> run: aCompiledMethod source: aString [
+BoMicroPlayground >> run: aCompiledMethod source: aString [
 	"Run a method returned by compile: and show its result. The turtles created by the method go in the world, see BoCurrentWorld. Return the result, or nil when it fails"
 
 	| result |
@@ -202,34 +202,34 @@ BoMicroWorkspace >> run: aCompiledMethod source: aString [
 ]
 
 { #category : 'initialization' }
-BoMicroWorkspace >> setWorld: aWorld [
+BoMicroPlayground >> setWorld: aWorld [
 
 	world := aWorld.
 	codePane environment: aWorld talkEnvironment
 ]
 
 { #category : 'private' }
-BoMicroWorkspace >> showError: aString [
+BoMicroPlayground >> showError: aString [
 
 	codePane showError.
 	messageLabel label: aString
 ]
 
 { #category : 'private' }
-BoMicroWorkspace >> showResult: anObject [
+BoMicroPlayground >> showResult: anObject [
 
 	codePane clearError.
 	messageLabel label: (anObject printStringLimitedTo: 200)
 ]
 
 { #category : 'window' }
-BoMicroWorkspace >> windowTitle [
+BoMicroPlayground >> windowTitle [
 
-	^ 'Bot Workspace'
+	^ 'Bot Playground'
 ]
 
 { #category : 'accessing' }
-BoMicroWorkspace >> world [
+BoMicroPlayground >> world [
 
 	^ world
 ]

@@ -1,5 +1,5 @@
 "
-I test that the pieces work together, as in BoTurtleWorld class>>openWithTools: a world opened in a space, with a micro browser docked in a flap on the right (flap, open) and a micro workspace docked in a flap at the bottom (workspaceFlap, closed). I simulate clicks and drags, as a user does. The browsed class is anonymous, so that the classes of the system are not changed. The space is closed in tearDown.
+I test that the pieces work together, as in BoTurtleWorld class>>openWithTools: a world opened in a space, with a micro browser docked in a flap on the right (flap, open) and a micro playground docked in a flap at the bottom (playgroundFlap, closed). I simulate clicks and drags, as a user does. The browsed class is anonymous, so that the classes of the system are not changed. The space is closed in tearDown.
 "
 Class {
 	#name : 'BoMicroToolsIntegrationTest',
@@ -7,10 +7,10 @@ Class {
 	#instVars : [
 		'browsedClass',
 		'browser',
-		'workspace',
+		'playground',
 		'world',
 		'flap',
-		'workspaceFlap',
+		'playgroundFlap',
 		'space'
 	],
 	#category : 'Botsinc-Micro-Tests',
@@ -51,19 +51,19 @@ BoMicroToolsIntegrationTest >> setUp [
 		classified: 'shapes'.
 	browser := BoMicroBrowser on: browsedClass.
 	world := BoTurtleWorld new.
-	workspace := BoMicroWorkspace on: world.
+	playground := BoMicroPlayground on: world.
 	flap := BoFlap new
 		        edge: BoFlapEdge right;
 		        thickness: 460;
 		        yourself.
 	browser dockIn: flap.
 	flap attachTo: world.
-	workspaceFlap := BoFlap new
+	playgroundFlap := BoFlap new
 		                 edge: BoFlapEdge bottom;
 		                 thickness: 240;
 		                 yourself.
-	workspace dockIn: workspaceFlap.
-	workspaceFlap attachTo: world.
+	playground dockIn: playgroundFlap.
+	playgroundFlap attachTo: world.
 	space := BlSpace new.
 	space extent: 900 @ 600.
 	space root addChild: world.
@@ -83,11 +83,11 @@ BoMicroToolsIntegrationTest >> settle [
 ]
 
 { #category : 'private' }
-BoMicroToolsIntegrationTest >> showWorkspaceFlap [
-	"Close the flap of the browser, that covers the right of the workspace, and open the flap of the workspace"
+BoMicroToolsIntegrationTest >> showPlaygroundFlap [
+	"Close the flap of the browser, that covers the right of the playground, and open the flap of the playground"
 
 	flap close.
-	workspaceFlap open.
+	playgroundFlap open.
 	self settle
 ]
 
@@ -139,13 +139,13 @@ BoMicroToolsIntegrationTest >> testDockedBrowserFillsTheFlap [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testDockedWorkspaceTakesHalfOfTheFlap [
+BoMicroToolsIntegrationTest >> testDockedPlaygroundTakesHalfOfTheFlap [
 
 	| paneBounds |
-	self showWorkspaceFlap.
-	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
+	self showPlaygroundFlap.
+	paneBounds := playgroundFlap pane bounds inSpace asRectangle insetBy: playgroundFlap pane padding asMargin.
 	self
-		assert: workspace window bounds inSpace asRectangle
+		assert: playground window bounds inSpace asRectangle
 		equals: (paneBounds origin extent: paneBounds width / 2 @ paneBounds height)
 ]
 
@@ -166,18 +166,18 @@ BoMicroToolsIntegrationTest >> testDragTitleBarPullsTheBrowserOutOfTheFlap [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testDragTitleBarPullsTheWorkspaceOutOfTheFlap [
+BoMicroToolsIntegrationTest >> testDragTitleBarPullsThePlaygroundOutOfTheFlap [
 
 	| before after |
-	self showWorkspaceFlap.
-	self assert: workspace isInFlap.
-	before := workspace window bounds inSpace asRectangle origin.
-	workspace window topBarElement eventSimulator dragBy: 100 @ -200.
+	self showPlaygroundFlap.
+	self assert: playground isInFlap.
+	before := playground window bounds inSpace asRectangle origin.
+	playground window topBarElement eventSimulator dragBy: 100 @ -200.
 	self settle.
-	self deny: workspace isInFlap.
-	self assert: workspace window parent identicalTo: world.
-	self assert: workspaceFlap pane children isEmpty.
-	after := workspace window bounds inSpace asRectangle origin.
+	self deny: playground isInFlap.
+	self assert: playground window parent identicalTo: world.
+	self assert: playgroundFlap pane children isEmpty.
+	after := playground window bounds inSpace asRectangle origin.
 	self assert: (after - before - (100 @ -200)) r < 2
 ]
 
@@ -190,30 +190,30 @@ BoMicroToolsIntegrationTest >> testFlapIsOpenAndShowsTheProtocols [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testPulledOutWorkspaceLeavesTheOtherOnItsHalf [
+BoMicroToolsIntegrationTest >> testPulledOutPlaygroundLeavesTheOtherOnItsHalf [
 
 	| other paneBounds |
-	other := BoMicroWorkspace on: world.
-	other dockIn: workspaceFlap.
-	self showWorkspaceFlap.
+	other := BoMicroPlayground on: world.
+	other dockIn: playgroundFlap.
+	self showPlaygroundFlap.
 	other window topBarElement eventSimulator dragBy: -100 @ -200.
 	self settle.
 	self deny: other isInFlap.
 	self assert: other isResizable.
-	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
+	paneBounds := playgroundFlap pane bounds inSpace asRectangle insetBy: playgroundFlap pane padding asMargin.
 	self
-		assert: workspace window bounds inSpace asRectangle
+		assert: playground window bounds inSpace asRectangle
 		equals: (paneBounds origin extent: paneBounds width / 2 @ paneBounds height)
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testPulledOutWorkspaceRunsScriptsOnTheWorld [
+BoMicroToolsIntegrationTest >> testPulledOutPlaygroundRunsScriptsOnTheWorld [
 
-	self showWorkspaceFlap.
-	workspace window topBarElement eventSimulator dragBy: 100 @ -200.
+	self showPlaygroundFlap.
+	playground window topBarElement eventSimulator dragBy: 100 @ -200.
 	self settle.
-	workspace codePane text: 'self newTurtle'.
-	workspace doItAll.
+	playground codePane text: 'self newTurtle'.
+	playground doItAll.
 	self settle.
 	self assert: world turtles size equals: 1
 ]
@@ -234,30 +234,30 @@ BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutBrowser [
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutWorkspace [
+BoMicroToolsIntegrationTest >> testSecondDragMovesThePulledOutPlayground [
 
 	| titleBar before after |
-	self showWorkspaceFlap.
-	titleBar := workspace window topBarElement.
+	self showPlaygroundFlap.
+	titleBar := playground window topBarElement.
 	titleBar eventSimulator dragBy: 100 @ -200.
 	self settle.
-	before := workspace window bounds inSpace asRectangle origin.
+	before := playground window bounds inSpace asRectangle origin.
 	titleBar eventSimulator dragBy: 30 @ 40.
 	self settle.
-	after := workspace window bounds inSpace asRectangle origin.
-	self assert: workspace window parent identicalTo: world.
+	after := playground window bounds inSpace asRectangle origin.
+	self assert: playground window parent identicalTo: world.
 	self assert: (after - before - (30 @ 40)) r < 2
 ]
 
 { #category : 'tests' }
-BoMicroToolsIntegrationTest >> testTwoWorkspacesShareTheFlapSideBySide [
+BoMicroToolsIntegrationTest >> testTwoPlaygroundsShareTheFlapSideBySide [
 
 	| other paneBounds left right |
-	other := BoMicroWorkspace on: world.
-	other dockIn: workspaceFlap.
-	self showWorkspaceFlap.
-	paneBounds := workspaceFlap pane bounds inSpace asRectangle insetBy: workspaceFlap pane padding asMargin.
-	left := workspace window bounds inSpace asRectangle.
+	other := BoMicroPlayground on: world.
+	other dockIn: playgroundFlap.
+	self showPlaygroundFlap.
+	paneBounds := playgroundFlap pane bounds inSpace asRectangle insetBy: playgroundFlap pane padding asMargin.
+	left := playground window bounds inSpace asRectangle.
 	right := other window bounds inSpace asRectangle.
 	self assert: left height equals: paneBounds height.
 	self assert: right height equals: paneBounds height.

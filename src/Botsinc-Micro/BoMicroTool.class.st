@@ -1,5 +1,5 @@
 "
-I am a tool of a turtle world, such as the micro workspace or the micro browser. I am a Spec presenter built with the Toplo backend. My window is a Spec window presenter whose adapter is a Toplo inner window (see BoMicroApplication), so that it lives inside the world: it can be placed anywhere in the world (openIn:at:) or in a flap (dockIn:). It is moved by its title bar and resized by its borders. Dragging its title bar while it is in a flap pulls it out of the flap into the world.
+I am a tool of a turtle world, such as the micro playground or the micro browser. I am a Spec presenter built with the Toplo backend. My window is a Spec window presenter whose adapter is a Toplo inner window (see BoMicroApplication), so that it lives inside the world: it can be placed anywhere in the world (openIn:at:) or in a flap (dockIn:). It is moved by its title bar and resized by its borders. Dragging its title bar while it is in a flap pulls it out of the flap into the world.
 "
 Class {
 	#name : 'BoMicroTool',

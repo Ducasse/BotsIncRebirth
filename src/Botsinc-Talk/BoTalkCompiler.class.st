@@ -31,7 +31,7 @@ BoTalkCompiler >> addsReceivers [
 
 { #category : 'accessing' }
 BoTalkCompiler >> addsReceivers: aBoolean [
-	"When aBoolean is true, as in the bubbles, a statement that does not say to whom it speaks is sent to the receiver (see intendedSource:). When it is false, as in the micro workspace, the code is compiled as it is written"
+	"When aBoolean is true, as in the bubbles, a statement that does not say to whom it speaks is sent to the receiver (see intendedSource:). When it is false, as in the micro playground, the code is compiled as it is written"
 
 	addsReceivers := aBoolean
 ]

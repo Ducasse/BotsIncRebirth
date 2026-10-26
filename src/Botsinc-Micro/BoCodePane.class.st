@@ -1,5 +1,5 @@
 "
-I am the code editor of the micro workspace and the micro browser: a Toplo album, the editor of the talk bubbles, embedded in a Spec presenter.
+I am the code editor of the micro playground and the micro browser: a Toplo album, the editor of the talk bubbles, embedded in a Spec presenter.
 
 My text is colored by a BoTalkStyler whose workspace is a BoTalkEnvironment, so that the variables shared with the talk bubbles of a world are colored as variables. When the code fails I show my whole text in red until it is edited, see showError.
 "

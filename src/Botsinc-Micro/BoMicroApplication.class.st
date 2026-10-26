@@ -1,5 +1,5 @@
 "
-I am the Spec application of the Bots Inc tools, the micro workspace and the micro browser. I use the Toplo backend, so that the tools are Bloc elements shown in windows inside a turtle world, see BoMicroTool.
+I am the Spec application of the Bots Inc tools, the micro playground and the micro browser. I use the Toplo backend, so that the tools are Bloc elements shown in windows inside a turtle world, see BoMicroTool.
 "
 Class {
 	#name : 'BoMicroApplication',

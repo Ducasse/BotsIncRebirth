@@ -30,7 +30,7 @@ Class {
 
 { #category : 'instance creation' }
 BoTurtle class >> new [
-	"A turtle created while a script of a micro workspace runs goes in the world of the workspace, see BoCurrentWorld"
+	"A turtle created while a script of a micro playground runs goes in the world of the playground, see BoCurrentWorld"
 
 	| turtle |
 	turtle := super new.

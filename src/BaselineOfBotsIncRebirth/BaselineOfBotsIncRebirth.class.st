@@ -1,5 +1,5 @@
 "
-I load the Bots Inc packages: turtles, flaps, talk bubbles, the turtles recording their drawings as EPS, SVG and PDF, and the micro workspace and micro browser, written with Bloc, Toplo and Spec.
+I load the Bots Inc packages: turtles, flaps, talk bubbles, the turtles recording their drawings as EPS, SVG and PDF, and the micro playground and micro browser, written with Bloc, Toplo and Spec.
 
 Toplo and its Spec backend Spec-Toplo are pinned to their v0.10.0 releases; they bring Bloc and Album.
 

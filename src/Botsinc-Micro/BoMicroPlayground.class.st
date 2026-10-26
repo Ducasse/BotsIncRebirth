@@ -7,7 +7,7 @@ My scripts are plain Smalltalk: unlike in the talk bubbles, no receiver is added
 	caro := BoTurtle new.
 	4 timesRepeat: [ caro go: 100; turnLeft: 90 ]
 
-Do it runs the selected text, or the whole script when nothing is selected (Cmd+D), Do it all runs the whole script. Both run in the UI process, so that any turtle can be used. Animate runs the whole script in its own process, so that the moves of animated turtles (BoAnimatedTurtle new) can be followed.
+Do it runs the selected text, or the whole script when nothing is selected (Cmd+D), Do it all runs the whole script. Both run in the UI process, so that any turtle can be used.
 "
 Class {
 	#name : 'BoMicroPlayground',
@@ -18,7 +18,6 @@ Class {
 		'messageLabel',
 		'doItButton',
 		'doItAllButton',
-		'animateButton',
 		'clearTrailsButton',
 		'clearTurtlesButton',
 		'clearAllButton'
@@ -33,16 +32,6 @@ BoMicroPlayground class >> on: aWorld [
 	^ (self newApplication: BoMicroApplication new)
 		  setWorld: aWorld;
 		  yourself
-]
-
-{ #category : 'running' }
-BoMicroPlayground >> animate [
-	"Run the whole script in its own process, so that the world is redrawn while animated turtles move. Return the process"
-
-	| source method |
-	source := codePane text.
-	method := (self compile: source) ifNil: [ ^ nil ].
-	^ [ self run: method source: source ] forkAt: Processor userBackgroundPriority named: 'BoMicroPlayground script'
 ]
 
 { #category : 'cleaning' }
@@ -101,7 +90,6 @@ BoMicroPlayground >> defaultLayout [
 				   spacing: 4;
 				   add: doItButton;
 				   add: doItAllButton;
-				   add: animateButton;
 				   add: clearTrailsButton;
 				   add: clearTurtlesButton;
 				   add: clearAllButton;
@@ -165,10 +153,6 @@ BoMicroPlayground >> initializePresenters [
 		              help: 'Run the selected text, or the whole script when nothing is selected (Cmd+D)'
 		              action: [ self doIt ].
 	doItAllButton := self newButtonLabeled: 'Do it all' help: 'Run the whole script' action: [ self doItAll ].
-	animateButton := self
-		                 newButtonLabeled: 'Animate'
-		                 help: 'Run the whole script step by step, so that animated turtles can be followed'
-		                 action: [ self animate ].
 	clearTrailsButton := self newButtonLabeled: 'Clear trails' help: 'Remove the trails of the turtles' action: [ self clearTrails ].
 	clearTurtlesButton := self
 		                      newButtonLabeled: 'Clear turtles'

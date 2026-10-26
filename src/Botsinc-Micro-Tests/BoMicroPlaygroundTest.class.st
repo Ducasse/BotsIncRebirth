@@ -21,17 +21,6 @@ BoMicroPlaygroundTest >> setUp [
 ]
 
 { #category : 'tests' }
-BoMicroPlaygroundTest >> testAnimateRunsTheScriptInItsOwnProcess [
-
-	| process |
-	playground codePane text: 'BoAnimatedTurtle new go: 10'.
-	process := playground animate.
-	self deny: process == Processor activeProcess.
-	self wait: 2 seconds until: [ process isTerminated ].
-	self assert: world turtles size equals: 1
-]
-
-{ #category : 'tests' }
 BoMicroPlaygroundTest >> testBuiltPlaygroundShowsTheResult [
 	"The playground is built with the Toplo backend, as when it is shown"
 
@@ -247,12 +236,4 @@ BoMicroPlaygroundTest >> testWindowIsASpecWindow [
 BoMicroPlaygroundTest >> testWindowIsTitled [
 
 	self assert: playground window title equals: 'Bot Playground'
-]
-
-{ #category : 'private' }
-BoMicroPlaygroundTest >> wait: aDuration until: aBlock [
-
-	| deadline |
-	deadline := DateAndTime now + aDuration.
-	[ aBlock value or: [ DateAndTime now > deadline ] ] whileFalse: [ 10 milliSeconds wait ]
 ]

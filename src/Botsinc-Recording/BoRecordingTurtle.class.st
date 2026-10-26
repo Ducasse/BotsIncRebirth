@@ -7,8 +7,7 @@ While recording I extend a bounding box (#minPoint and #maxPoint), so that a for
 
 Page coordinates: my starting place is put at the center of an A4 page (300@420 points) and the y axis goes up, as in PostScript and PDF. A margin of 10 points is added around the drawing.
 
-My subclasses define:
-- #initializeRecording to create what they write into,
+My subclasses write the drawing into my output stream. They define:
 - #writePathStart, #writePathEnd and #writeMoveTo:drawing:,
 - on the class side, #documentOf: which makes one document of the drawings of several turtles, and #fileExtension.
 
@@ -24,7 +23,8 @@ Class {
 	#instVars : [
 		'minPoint',
 		'maxPoint',
-		'lastPoint'
+		'lastPoint',
+		'output'
 	],
 	#classInstVars : [
 		'createdTurtles'
@@ -233,8 +233,9 @@ BoRecordingTurtle >> initialize [
 
 { #category : 'initialization' }
 BoRecordingTurtle >> initializeRecording [
-	"Subclasses create here what they write into, before the first path starts"
+	"Create the stream into which subclasses write the drawing. A subclass that records something else redefines this method"
 
+	output := WriteStream on: (String new: 200)
 ]
 
 { #category : 'accessing' }

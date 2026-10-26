@@ -16,9 +16,6 @@ An EPS document must give its bounding box in its header, before the drawing. In
 Class {
 	#name : 'BoEPSTurtle',
 	#superclass : 'BoRecordingTurtle',
-	#instVars : [
-		'path'
-	],
 	#category : 'Botsinc-Recording',
 	#package : 'Botsinc-Recording'
 }
@@ -50,25 +47,19 @@ BoEPSTurtle class >> fileExtension [
 
 ]
 
-{ #category : 'initialization' }
-BoEPSTurtle >> initializeRecording [
-	path := WriteStream on: (String new: 200)
-
-]
-
 { #category : 'postscript' }
 BoEPSTurtle >> pathContents [
 	"The PostScript drawing what the receiver did, ending with the stroke of the current path. The receiver can continue to move afterwards"
 
-	^ path contents , 'stroke' , String lf
+	^ output contents , 'stroke' , String lf
 
 ]
 
 { #category : 'recording' }
 BoEPSTurtle >> writeColor [
 	{ penColor red. penColor green. penColor blue } do: [ :each |
-		path nextPutAll: (each printShowingDecimalPlaces: 3); space ].
-	path nextPutAll: 'setrgbcolor'; lf
+		output nextPutAll: (each printShowingDecimalPlaces: 3); space ].
+	output nextPutAll: 'setrgbcolor'; lf
 
 ]
 
@@ -82,7 +73,7 @@ BoEPSTurtle >> writeMoveTo: aPoint drawing: aBoolean [
 
 { #category : 'writing' }
 BoEPSTurtle >> writePathEnd [
-	path nextPutAll: 'stroke'; lf
+	output nextPutAll: 'stroke'; lf
 
 ]
 
@@ -90,18 +81,18 @@ BoEPSTurtle >> writePathEnd [
 BoEPSTurtle >> writePathStart [
 	"Set the pen, then start a new path"
 
-	self class print: penSize on: path.
-	path nextPutAll: ' setlinewidth'; lf.
+	self class print: penSize on: output.
+	output nextPutAll: ' setlinewidth'; lf.
 	self writeColor.
-	path nextPutAll: 'newpath'; lf
+	output nextPutAll: 'newpath'; lf
 
 ]
 
 { #category : 'recording' }
 BoEPSTurtle >> writePoint: aPoint operator: aString [
-	self class print: aPoint x on: path.
-	path space.
-	self class print: aPoint y on: path.
-	path space; nextPutAll: aString; lf
+	self class print: aPoint x on: output.
+	output space.
+	self class print: aPoint y on: output.
+	output space; nextPutAll: aString; lf
 
 ]

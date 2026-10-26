@@ -14,9 +14,6 @@ A PDF file is a list of numbered objects (catalog, pages, page, content stream) 
 Class {
 	#name : 'BoPDFTurtle',
 	#superclass : 'BoRecordingTurtle',
-	#instVars : [
-		'content'
-	],
 	#category : 'Botsinc-Recording',
 	#package : 'Botsinc-Recording'
 }
@@ -76,13 +73,7 @@ BoPDFTurtle class >> pageContentOf: aCollection [
 BoPDFTurtle >> contentStream [
 	"The PDF operators drawing what the receiver did, ending with the stroke of the current path. The receiver can continue to move afterwards"
 
-	^ content contents , 'S' , String lf
-
-]
-
-{ #category : 'initialization' }
-BoPDFTurtle >> initializeRecording [
-	content := WriteStream on: (String new: 200)
+	^ output contents , 'S' , String lf
 
 ]
 
@@ -90,10 +81,10 @@ BoPDFTurtle >> initializeRecording [
 BoPDFTurtle >> writeMoveTo: aPoint drawing: aBoolean [
 	"A go: becomes a l(ineto), a jump: a m(oveto), as in PostScript"
 
-	self class print: aPoint x on: content.
-	content space.
-	self class print: aPoint y on: content.
-	content nextPutAll: (aBoolean ifTrue: [ ' l' ] ifFalse: [ ' m' ]); lf
+	self class print: aPoint x on: output.
+	output space.
+	self class print: aPoint y on: output.
+	output nextPutAll: (aBoolean ifTrue: [ ' l' ] ifFalse: [ ' m' ]); lf
 
 ]
 
@@ -101,7 +92,7 @@ BoPDFTurtle >> writeMoveTo: aPoint drawing: aBoolean [
 BoPDFTurtle >> writePathEnd [
 	"Stroke the path"
 
-	content nextPutAll: 'S'; lf
+	output nextPutAll: 'S'; lf
 
 ]
 
@@ -109,10 +100,10 @@ BoPDFTurtle >> writePathEnd [
 BoPDFTurtle >> writePathStart [
 	"Set the width (w) and the stroke color (RG) of the new path"
 
-	self class print: penSize on: content.
-	content nextPutAll: ' w'; lf.
+	self class print: penSize on: output.
+	output nextPutAll: ' w'; lf.
 	{ penColor red. penColor green. penColor blue } do: [ :each |
-		content nextPutAll: (each printShowingDecimalPlaces: 3); space ].
-	content nextPutAll: 'RG'; lf
+		output nextPutAll: (each printShowingDecimalPlaces: 3); space ].
+	output nextPutAll: 'RG'; lf
 
 ]

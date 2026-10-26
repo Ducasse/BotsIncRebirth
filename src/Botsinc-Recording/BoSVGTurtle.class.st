@@ -15,7 +15,6 @@ Class {
 	#name : 'BoSVGTurtle',
 	#superclass : 'BoRecordingTurtle',
 	#instVars : [
-		'elements',
 		'pathStart',
 		'pathData',
 		'pathHasLine'
@@ -60,12 +59,6 @@ BoSVGTurtle >> currentPathElement [
 
 ]
 
-{ #category : 'initialization' }
-BoSVGTurtle >> initializeRecording [
-	elements := WriteStream on: (String new: 200)
-
-]
-
 { #category : 'converting' }
 BoSVGTurtle >> pagePointFor: aPoint [
 	"The y axis of SVG goes down as in Bloc: no flip, the starting place is only moved to the center of the page"
@@ -78,7 +71,7 @@ BoSVGTurtle >> pagePointFor: aPoint [
 BoSVGTurtle >> pathElements [
 	"The path elements of the drawing of the receiver, including the current path. The receiver can continue to move afterwards"
 
-	^ elements contents , self currentPathElement
+	^ output contents , self currentPathElement
 
 ]
 
@@ -97,7 +90,7 @@ BoSVGTurtle >> writeMoveTo: aPoint drawing: aBoolean [
 
 { #category : 'writing' }
 BoSVGTurtle >> writePathEnd [
-	elements nextPutAll: self currentPathElement
+	output nextPutAll: self currentPathElement
 
 ]
 
